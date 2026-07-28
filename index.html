@@ -37,7 +37,6 @@
             -webkit-tap-highlight-color: transparent;
         }
         
-        /* Mobile Frame for Desktop */
         .app-container {
             max-width: 414px;
             margin: 0 auto;
@@ -63,7 +62,6 @@
         
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Bottom Navigation */
         .bottom-nav {
             position: absolute; bottom: 0; left: 0; right: 0;
             background: #ffffff;
@@ -80,7 +78,6 @@
         .nav-item span { font-size: 10px; font-weight: 500; }
         .nav-item.active { color: #2563eb; }
 
-        /* Custom Checkbox */
         .app-checkbox {
             appearance: none; width: 22px; height: 22px; border: 2px solid #d1d5db; border-radius: 6px;
             display: inline-flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
@@ -89,7 +86,6 @@
         .app-checkbox:checked { background-color: #2563eb; border-color: #2563eb; }
         .app-checkbox:checked::after { content: '\f00c'; font-family: 'Font Awesome 6 Free'; font-weight: 900; color: white; font-size: 12px; }
 
-        /* Inputs */
         .input-standard {
             background: #ffffff;
             border: 1px solid #d1d5db;
@@ -102,10 +98,8 @@
         }
         .input-standard:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
 
-        /* Floating Action Button */
         .fab { position: absolute; bottom: 90px; right: 20px; z-index: 30; }
 
-        /* Bottom Sheet Modal */
         .sheet-overlay {
             position: absolute; inset: 0; background: rgba(0,0,0,0.5); z-index: 50;
             opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
@@ -121,7 +115,6 @@
         .sheet-overlay.active .bottom-sheet { transform: translateY(0); }
         .sheet-handle { width: 40px; height: 5px; background: #e5e7eb; border-radius: 10px; margin: 12px auto; }
         
-        /* Welcome Screen Animations */
         @keyframes zoomBg {
             0% { transform: scale(1); }
             100% { transform: scale(1.2); }
@@ -157,11 +150,9 @@
     
     <!-- Welcome Screen -->
     <div id="welcome-screen" class="welcome-screen flex flex-col justify-between px-6 pb-10 pt-20 overflow-hidden">
-        <!-- Background Animation -->
         <div class="welcome-bg"></div>
         <div class="welcome-overlay"></div>
         
-        <!-- Top Content -->
         <div class="relative z-10 flex flex-col items-center text-center animate-delay-1">
             <div class="w-24 h-24 bg-white/10 backdrop-blur-md rounded-[2rem] flex items-center justify-center border border-white/20 shadow-2xl mb-8">
                 <i class="fa-solid fa-mountain-sun text-5xl text-white"></i>
@@ -175,7 +166,6 @@
             </p>
         </div>
         
-        <!-- Bottom Content -->
         <div class="relative z-10 w-full animate-delay-3">
             <div class="bg-white/10 backdrop-blur-lg border border-white/20 p-2.5 rounded-[1.5rem]">
                 <button onclick="startApp()" class="w-full bg-white text-brand-700 font-extrabold py-4 rounded-xl shadow-xl active:scale-95 transition-all flex items-center justify-center gap-3 text-[17px] group">
@@ -199,9 +189,8 @@
                 </p>
             </div>
         </div>
-        <button class="relative w-10 h-10 rounded-full bg-white border border-gray-100 text-gray-600 flex items-center justify-center hover:bg-gray-50 transition shadow-sm">
-            <i class="fa-regular fa-bell"></i>
-            <span class="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full shadow-[0_0_0_2px_#ffffff]"></span>
+        <button onclick="loadDataFromJSONBin()" class="relative w-10 h-10 rounded-full bg-white border border-gray-100 text-gray-600 flex items-center justify-center hover:bg-gray-50 transition shadow-sm" title="Sinkronkan Data">
+            <i class="fa-solid fa-rotate"></i>
         </button>
     </header>
 
@@ -209,7 +198,6 @@
         
         <!-- DASHBOARD VIEW -->
         <div id="view-dashboard" class="tab-view active">
-            <!-- Hero Card -->
             <div class="bg-gradient-to-br from-brand-500 to-brand-700 rounded-2xl p-6 text-white relative overflow-hidden mb-6 shadow-lg shadow-blue-500/30">
                 <div class="absolute -right-6 -top-6 w-32 h-32 bg-white opacity-10 rounded-full"></div>
                 <div class="relative z-10">
@@ -226,7 +214,6 @@
                 </div>
             </div>
 
-            <!-- Stats -->
             <div class="grid grid-cols-2 gap-4 mb-6">
                 <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center gap-3">
                     <div class="w-10 h-10 rounded-full bg-orange-100 text-orange-500 flex items-center justify-center"><i class="fa-solid fa-users"></i></div>
@@ -288,26 +275,11 @@
                     <h3 class="font-bold text-sm">Waktu Shalat (Area Garut)</h3>
                 </div>
                 <div class="flex justify-between items-center text-center px-1">
-                    <div>
-                        <p class="text-[10px] text-emerald-100 mb-1">Subuh</p>
-                        <p class="font-semibold text-sm">04:25</p>
-                    </div>
-                    <div>
-                        <p class="text-[10px] text-emerald-100 mb-1">Dzuhur</p>
-                        <p class="font-semibold text-sm">11:50</p>
-                    </div>
-                    <div>
-                        <p class="text-[10px] text-emerald-100 mb-1">Ashar</p>
-                        <p class="font-semibold text-sm">15:10</p>
-                    </div>
-                    <div>
-                        <p class="text-[10px] text-emerald-100 mb-1">Maghrib</p>
-                        <p class="font-semibold text-sm">17:55</p>
-                    </div>
-                    <div>
-                        <p class="text-[10px] text-emerald-100 mb-1">Isya</p>
-                        <p class="font-semibold text-sm">19:05</p>
-                    </div>
+                    <div><p class="text-[10px] text-emerald-100 mb-1">Subuh</p><p class="font-semibold text-sm">04:25</p></div>
+                    <div><p class="text-[10px] text-emerald-100 mb-1">Dzuhur</p><p class="font-semibold text-sm">11:50</p></div>
+                    <div><p class="text-[10px] text-emerald-100 mb-1">Ashar</p><p class="font-semibold text-sm">15:10</p></div>
+                    <div><p class="text-[10px] text-emerald-100 mb-1">Maghrib</p><p class="font-semibold text-sm">17:55</p></div>
+                    <div><p class="text-[10px] text-emerald-100 mb-1">Isya</p><p class="font-semibold text-sm">19:05</p></div>
                 </div>
             </div>
 
@@ -384,9 +356,7 @@
                 </button>
             </div>
             
-            <div id="modal-body" class="p-5 overflow-y-auto max-h-[60vh] space-y-3">
-                <!-- Form Injected via JS -->
-            </div>
+            <div id="modal-body" class="p-5 overflow-y-auto max-h-[60vh] space-y-3"></div>
 
             <div class="p-5 pt-0 pb-8">
                 <button onclick="saveModal()" class="w-full bg-brand-600 text-white font-semibold py-3.5 rounded-xl shadow-md active:scale-95 transition">
@@ -414,50 +384,53 @@
 </div>
 
 <script>
-    // Load state dari localStorage jika ada, jika tidak gunakan default
-    const savedState = localStorage.getItem('garut_trip_state');
-    
-    let state = savedState ? JSON.parse(savedState) : {
-        trip: { title: "Ekspedisi Garut", dates: "1 - 4 Okt 2026", duration: "4 Hari 3 Malam", targetDate: "2026-10-01" },
-        participants: [
-            { id: 1, name: "Fajar Nur", role: "Dokumentasi" },
-            { id: 2, name: "Iqbal Samsudin", role: "Logistik" },
-            { id: 3, name: "M. Aryan", role: "Anggota" },
-            { id: 4, name: "M. Rifki", role: "Anggota" },
-            { id: 5, name: "Prima Putra", role: "Ketua Regu" },
-            { id: 6, name: "Rido Aulia", role: "Transportasi" },
-            { id: 7, name: "Rifan Aryanda", role: "Bendahara" }
-        ].sort((a, b) => a.name.localeCompare(b.name)),
-        
-        itinerary: [
-            { id: 1, rawDate: "2026-10-01", day: "Kamis, 1 Okt", time: "20:00", title: "Bus ke Terminal Guntur", desc: "Dari Pool Primajasa (Tangsel)", type: "transit" },
-            { id: 2, rawDate: "2026-10-02", day: "Jumat, 2 Okt", time: "02:00", title: "Carter ke Papandayan", desc: "Guntur ke Camp David", type: "transit" },
-            { id: 3, rawDate: "2026-10-02", day: "Jumat, 2 Okt", time: "07:00", title: "Trekking & Kemah", desc: "Mendirikan tenda, Hutan Mati, Tegal Alun", type: "activity" },
-            { id: 4, rawDate: "2026-10-03", day: "Sabtu, 3 Okt", time: "09:00", title: "Turun ke Camp David", desc: "Kembali ke basecamp", type: "transit" },
-            { id: 5, rawDate: "2026-10-03", day: "Sabtu, 3 Okt", time: "10:30", title: "Pemandian Air Panas", desc: "Berendam di air panas alami Papandayan", type: "activity" },
-            { id: 6, rawDate: "2026-10-03", day: "Sabtu, 3 Okt", time: "12:30", title: "Turun ke Kersamenak", desc: "Carter mobil ke rumah", type: "transit" },
-            { id: 7, rawDate: "2026-10-03", day: "Sabtu, 3 Okt", time: "15:00", title: "Darajat Pass", desc: "Naik motor sewaan", type: "activity" },
-            { id: 8, rawDate: "2026-10-04", day: "Minggu, 4 Okt", time: "13:00", title: "Pulang ke Tangsel", desc: "Kembali naik Bus", type: "transit" }
-        ],
-        
-        checklist: [
-            { id: 1, name: "Tenda Kapasitas 4", qty: "2 Unit", cat: "Alat", note: "Bawa pasak ekstra", pic: "Iqbal Samsudin", done: true },
-            { id: 2, name: "Logistik Makanan 4 Hari", qty: "Banyak", cat: "Konsumsi", note: "Beras, indomie, kopi", pic: "Fajar Nur", done: false },
-            { id: 3, name: "Nesting & Kompor", qty: "2 Set", cat: "Alat", note: "Gas 4 kaleng", pic: "Prima Putra", done: false }
-        ],
+    const BIN_ID = '6a6847d4da38895dfe99f4aa';
+    const API_KEY = '$2a$10$ns1OSogNiANZAJ/k6optMe3/GND7i84vrBQY7zzm.l12JR0mNdD5u';
 
-        budget: [
-            { id: 1, name: "Bus Tangsel-Garut (PP)", note: "Untuk 7 orang", amount: 1330000 },
-            { id: 2, name: "Carter Naik & Turun Gunung", note: "2x Carter Mobil", amount: 650000 },
-            { id: 3, name: "Sewa 4 Motor & Bensin", note: "Kersamenak - Darajat", amount: 500000 },
-            { id: 4, name: "Simaksi & Tiket Masuk", note: "Tiket 7 orang", amount: 700000 },
-            { id: 5, name: "Logistik Rombongan", note: "Makan & minum 4 hari", amount: 1500000 },
-            { id: 6, name: "Dana Darurat", note: "Kas rombongan", amount: 500000 }
-        ]
+    let state = {
+        trip: { title: "Ekspedisi Garut", dates: "1 - 4 Okt 2026", duration: "4 Hari 3 Malam", targetDate: "2026-10-01" },
+        participants: [],
+        itinerary: [],
+        checklist: [],
+        budget: []
     };
 
-    function saveStateToStorage() {
-        localStorage.setItem('garut_trip_state', JSON.stringify(state));
+    async function loadDataFromJSONBin() {
+        try {
+            let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+                headers: { 'X-Master-Key': API_KEY }
+            });
+            let json = await res.json();
+            if (json && json.record) {
+                state = json.record;
+                refreshUI();
+            }
+        } catch (e) {
+            console.error("Gagal memuat data", e);
+        }
+    }
+
+    async function saveDataToJSONBin() {
+        try {
+            await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': API_KEY
+                },
+                body: JSON.stringify(state)
+            });
+        } catch (e) {
+            console.error("Gagal menyimpan data", e);
+        }
+    }
+
+    function refreshUI() {
+        if(currentTab === 'dashboard') renderDashboard();
+        if(currentTab === 'peserta') renderPeserta();
+        if(currentTab === 'jadwal') renderJadwal();
+        if(currentTab === 'barang') renderBarang();
+        if(currentTab === 'biaya') renderBiaya();
     }
 
     let currentTab = 'dashboard';
@@ -488,18 +461,13 @@
         else fab.classList.remove('hidden');
 
         document.querySelector('.scroll-area').scrollTo(0,0);
-        
-        if(tabId === 'dashboard') renderDashboard();
-        if(tabId === 'peserta') renderPeserta();
-        if(tabId === 'jadwal') renderJadwal();
-        if(tabId === 'barang') renderBarang();
-        if(tabId === 'biaya') renderBiaya();
+        refreshUI();
     }
 
     function renderDashboard() {
-        document.getElementById('dash-title').innerText = state.trip.title;
-        document.getElementById('dash-dates').innerText = state.trip.dates;
-        document.getElementById('dash-duration').innerText = state.trip.duration;
+        document.getElementById('dash-title').innerText = state.trip.title || '';
+        document.getElementById('dash-dates').innerText = state.trip.dates || '';
+        document.getElementById('dash-duration').innerText = state.trip.duration || '';
         document.getElementById('stat-peserta').innerText = state.participants.length;
 
         let diff = Math.ceil((new Date(state.trip.targetDate) - new Date()) / (1000 * 60 * 60 * 24));
@@ -599,7 +567,7 @@
         let item = state.checklist.find(x => x.id === id);
         if(item) { 
             item.done = !item.done; 
-            saveStateToStorage();
+            saveDataToJSONBin();
             renderBarang(); 
             renderDashboard(); 
         }
@@ -723,7 +691,7 @@
                 renderBiaya(); renderDashboard();
             }
         }
-        saveStateToStorage();
+        saveDataToJSONBin();
         closeModal();
     }
 
@@ -746,7 +714,7 @@
             if(type === 'jadwal') { state.itinerary = state.itinerary.filter(x=>x.id!==id); renderJadwal(); }
             if(type === 'barang') { state.checklist = state.checklist.filter(x=>x.id!==id); renderBarang(); renderDashboard(); }
             if(type === 'biaya') { state.budget = state.budget.filter(x=>x.id!==id); renderBiaya(); renderDashboard(); }
-            saveStateToStorage();
+            saveDataToJSONBin();
             closeConfirm();
         }
     }
@@ -757,7 +725,9 @@
         setTimeout(() => { ws.style.display = 'none'; }, 600);
     }
 
-    window.onload = () => switchTab('dashboard');
+    window.onload = () => {
+        loadDataFromJSONBin().then(() => switchTab('dashboard'));
+    };
 </script>
 </body>
 </html>
