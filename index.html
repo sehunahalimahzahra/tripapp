@@ -198,6 +198,7 @@
         
         <!-- DASHBOARD VIEW -->
         <div id="view-dashboard" class="tab-view active">
+            <!-- Hero Card -->
             <div class="bg-gradient-to-br from-brand-500 to-brand-700 rounded-2xl p-6 text-white relative overflow-hidden mb-6 shadow-lg shadow-blue-500/30">
                 <div class="absolute -right-6 -top-6 w-32 h-32 bg-white opacity-10 rounded-full"></div>
                 <div class="relative z-10">
@@ -214,6 +215,7 @@
                 </div>
             </div>
 
+            <!-- Stats -->
             <div class="grid grid-cols-2 gap-4 mb-6">
                 <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center gap-3">
                     <div class="w-10 h-10 rounded-full bg-orange-100 text-orange-500 flex items-center justify-center"><i class="fa-solid fa-users"></i></div>
@@ -242,6 +244,7 @@
                 <i class="fa-solid fa-chevron-right text-gray-300 text-sm"></i>
             </div>
 
+            <!-- Info Destinasi -->
             <h3 class="text-sm font-bold text-gray-900 mb-3">Info Destinasi</h3>
             <div class="bg-white shadow-sm rounded-2xl p-4 border border-gray-100 flex gap-4 items-start mb-6">
                 <div class="w-12 h-12 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center flex-shrink-0 mt-1">
@@ -255,6 +258,83 @@
                     </a>
                 </div>
             </div>
+
+            <!-- NEW: Estimasi Waktu (Timeline) -->
+            <h3 class="text-sm font-bold text-gray-900 mb-3">Estimasi Waktu Pendakian</h3>
+            <div class="bg-white shadow-sm rounded-2xl p-5 border border-gray-100 mb-6">
+                <div class="relative border-l-2 border-brand-100 ml-2 space-y-5 pb-1">
+                    
+                    <div class="relative pl-5">
+                        <div class="absolute w-3 h-3 bg-brand-500 rounded-full -left-[7px] top-1 shadow-sm ring-4 ring-white"></div>
+                        <h4 class="text-xs font-bold text-gray-900">Area Kawah Aktif</h4>
+                        <p class="text-[11px] text-gray-500 mt-1 leading-relaxed"><i class="fa-regular fa-clock mr-1 text-brand-500"></i>30 – 45 menit (1,5 km) <br><span class="text-gray-400">Titik awal dari Camp David</span></p>
+                    </div>
+                    
+                    <div class="relative pl-5">
+                        <div class="absolute w-3 h-3 bg-brand-500 rounded-full -left-[7px] top-1 shadow-sm ring-4 ring-white"></div>
+                        <h4 class="text-xs font-bold text-gray-900">Pondok Saladah (Area Camp Utama)</h4>
+                        <p class="text-[11px] text-gray-500 mt-1 leading-relaxed"><i class="fa-regular fa-clock mr-1 text-brand-500"></i>1,5 – 2,5 jam (3 km) <br><span class="text-gray-400">Dari Camp David</span></p>
+                    </div>
+                    
+                    <div class="relative pl-5">
+                        <div class="absolute w-3 h-3 bg-brand-500 rounded-full -left-[7px] top-1 shadow-sm ring-4 ring-white"></div>
+                        <h4 class="text-xs font-bold text-gray-900">Hutan Mati</h4>
+                        <p class="text-[11px] text-gray-500 mt-1 leading-relaxed"><i class="fa-regular fa-clock mr-1 text-brand-500"></i>2 – 2,5 jam (3,5 km) <br><span class="text-gray-400">Dari Camp David</span></p>
+                    </div>
+
+                    <div class="relative pl-5">
+                        <div class="absolute w-3 h-3 bg-brand-500 rounded-full -left-[7px] top-1 shadow-sm ring-4 ring-white"></div>
+                        <h4 class="text-xs font-bold text-gray-900">Tegal Alun (Padang Edelweiss)</h4>
+                        <p class="text-[11px] text-gray-500 mt-1 leading-relaxed"><i class="fa-regular fa-clock mr-1 text-brand-500"></i>2,5 – 3,5 jam (4,5 – 5 km) <br><span class="text-gray-400">Dari Camp David</span></p>
+                    </div>
+
+                    <div class="relative pl-5">
+                        <div class="absolute w-3 h-3 bg-brand-600 rounded-full -left-[7px] top-1 shadow-sm ring-4 ring-brand-100 flex items-center justify-center">
+                            <div class="w-1 h-1 bg-white rounded-full"></div>
+                        </div>
+                        <h4 class="text-xs font-bold text-brand-700">Puncak Top Gunung (±2.665 mdpl)</h4>
+                        <p class="text-[11px] text-gray-500 mt-1 leading-relaxed"><i class="fa-regular fa-clock mr-1 text-brand-600"></i>3 – 4 jam <br><span class="text-gray-400">Total perjalanan mendaki dari bawah</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NEW: Gambaran Jalur Pendakian -->
+            <h3 class="text-sm font-bold text-gray-900 mb-3">Gambaran Jalur</h3>
+            <div class="space-y-3 mb-6">
+                <!-- Medan Jalur -->
+                <div class="bg-orange-50 border border-orange-100 rounded-2xl p-4 flex gap-3.5">
+                    <div class="w-9 h-9 rounded-full bg-orange-100 text-orange-500 flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-shoe-prints text-sm"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-bold text-gray-900 mb-1">Medan Jalur</h4>
+                        <p class="text-[11px] text-gray-600 leading-relaxed pr-2">Jalur awal relatif landai melewati kawah berbatu dan semen/tangga buatan, lalu menanjak moderat menuju Pondok Saladah dan Hutan Mati.</p>
+                    </div>
+                </div>
+                
+                <!-- Opsi Ojek -->
+                <div class="bg-blue-50 border border-blue-100 rounded-2xl p-4 flex gap-3.5">
+                    <div class="w-9 h-9 rounded-full bg-blue-100 text-blue-500 flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-motorcycle text-sm"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-bold text-gray-900 mb-1">Opsi Ojek</h4>
+                        <p class="text-[11px] text-gray-600 leading-relaxed pr-2">Terdapat layanan ojek lokal dari area bawah dekat Camp David menuju titik dekat persimpangan kawah untuk memotong waktu tempuh awal sekitar 30–45 menit.</p>
+                    </div>
+                </div>
+                
+                <!-- Durasi Tektok -->
+                <div class="bg-green-50 border border-green-100 rounded-2xl p-4 flex gap-3.5">
+                    <div class="w-9 h-9 rounded-full bg-green-100 text-green-500 flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-stopwatch text-sm"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-bold text-gray-900 mb-1">Durasi Tektok (One Day Trip)</h4>
+                        <p class="text-[11px] text-gray-600 leading-relaxed pr-2">Bagi pendaki pulang-pergi di hari yang sama, total waktu perjalanan bersih berkisar antara 5 hingga 7 jam (sudah termasuk waktu istirahat dan foto).</p>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
         <!-- PESERTA VIEW -->
