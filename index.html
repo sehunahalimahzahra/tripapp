@@ -103,23 +103,34 @@
         .sheet-overlay.active .bottom-sheet { transform: translateY(0); }
         .sheet-handle { width: 40px; height: 5px; background: #e5e7eb; border-radius: 10px; margin: 12px auto; }
         
-        @keyframes zoomBg { 0% { transform: scale(1); } 100% { transform: scale(1.2); } }
         @keyframes slideUpFade { 0% { opacity: 0; transform: translateY(40px); } 100% { opacity: 1; transform: translateY(0); } }
         
+        /* New Elegant Dynamic Background */
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .elegant-bg {
+            background: linear-gradient(-45deg, #eff6ff, #dbeafe, #e0e7ff, #f3e8ff);
+            background-size: 400% 400%;
+            animation: gradientBG 12s ease infinite;
+        }
+
+        /* Floating animation for icon */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-12px); }
+            100% { transform: translateY(0px); }
+        }
+        .animate-float { animation: float 3s ease-in-out infinite; }
+        
         .welcome-screen { position: absolute; inset: 0; z-index: 100; transition: opacity 0.7s ease, transform 0.7s ease; }
-        .welcome-screen.hide { opacity: 0; transform: scale(1.1); pointer-events: none; }
-        .welcome-bg {
-            position: absolute; inset: 0; z-index: -2;
-            background: url('https://images.unsplash.com/photo-1501555088652-021faa106b9b?auto=format&fit=crop&w=800&q=80') center/cover;
-            animation: zoomBg 20s infinite alternate ease-in-out;
-        }
-        .welcome-overlay {
-            position: absolute; inset: 0; z-index: -1;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(30, 58, 138, 0.95));
-        }
-        .animate-delay-1 { animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both; }
-        .animate-delay-2 { animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both; }
-        .animate-delay-3 { animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.6s both; }
+        .welcome-screen.hide { opacity: 0; transform: scale(1.05); pointer-events: none; }
+        
+        .animate-delay-1 { animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both; }
+        .animate-delay-2 { animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both; }
+        .animate-delay-3 { animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both; }
     </style>
 </head>
 <body>
@@ -127,30 +138,26 @@
 <div class="app-container" id="app">
     
     <!-- Welcome Screen -->
-    <div id="welcome-screen" class="welcome-screen flex flex-col justify-between px-6 pb-10 pt-20 overflow-hidden">
-        <div class="welcome-bg"></div>
-        <div class="welcome-overlay"></div>
+    <div id="welcome-screen" class="welcome-screen elegant-bg flex flex-col justify-between px-8 pb-12 pt-24 overflow-hidden">
         
-        <div class="relative z-10 flex flex-col items-center text-center animate-delay-1">
-            <div class="w-24 h-24 bg-white/10 backdrop-blur-md rounded-[2rem] flex items-center justify-center border border-white/20 shadow-2xl mb-8">
-                <i class="fa-solid fa-map-location-dot text-5xl text-white"></i>
+        <div class="relative z-10 flex flex-col items-center text-center animate-delay-1 mt-8">
+            <div class="w-28 h-28 bg-white/70 backdrop-blur-xl rounded-[2rem] flex items-center justify-center shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-white mb-10 animate-float">
+                <i class="fa-solid fa-map-location-dot text-[3rem] text-brand-600"></i>
             </div>
-            <h1 class="text-4xl font-black text-white mb-4 tracking-tight leading-tight">
+            <h1 class="text-[2.5rem] font-black text-gray-900 mb-4 tracking-tight leading-tight">
                 TripMate <br>
-                <span class="text-brand-300">Planner</span>
+                <span class="text-brand-600">Planner</span>
             </h1>
-            <p class="text-blue-100/90 text-sm font-medium leading-relaxed px-4 animate-delay-2">
-                Kerja buat cari cuan, liburan buat cari kewarasan. Kelola semua rencana trip bareng circle kamu di sini.
+            <p class="text-gray-600 text-[15px] font-medium leading-relaxed px-2 animate-delay-2">
+                Simpel, elegan, dan rapi. Kelola jadwal, tim, logistik, hingga patungan liburanmu di satu tempat.
             </p>
         </div>
         
         <div class="relative z-10 w-full animate-delay-3">
-            <div class="bg-white/10 backdrop-blur-lg border border-white/20 p-2.5 rounded-[1.5rem]">
-                <button onclick="startApp()" class="w-full bg-white text-brand-700 font-extrabold py-4 rounded-xl shadow-xl active:scale-95 transition-all flex items-center justify-center gap-3 text-[17px] group">
-                    Mulai Petualangan 
-                    <i class="fa-solid fa-arrow-right-long group-active:translate-x-3 transition-transform duration-300"></i>
-                </button>
-            </div>
+            <button onclick="startApp()" class="w-full bg-gray-900 text-white font-bold py-4 rounded-2xl shadow-xl active:scale-95 transition-all flex items-center justify-center gap-3 text-[16px] group hover:bg-gray-800">
+                Mulai Petualangan 
+                <i class="fa-solid fa-arrow-right-long group-active:translate-x-3 transition-transform duration-300"></i>
+            </button>
         </div>
     </div>
 
@@ -334,7 +341,26 @@
         <!-- JADWAL VIEW -->
         <div id="view-jadwal" class="tab-view">
             <h2 class="text-xl font-bold text-gray-900 mb-1">Jadwal Perjalanan</h2>
-            <p class="text-sm text-gray-500 mb-6">Rencana aktivitas (Itinerary)</p>
+            <p class="text-sm text-gray-500 mb-4">Rencana aktivitas (Itinerary)</p>
+            
+            <div class="bg-gradient-to-r from-emerald-500 to-teal-600 rounded-xl p-4 shadow-sm text-white mb-6 relative overflow-hidden">
+                <div class="absolute -right-4 -top-4 w-24 h-24 bg-white opacity-10 rounded-full"></div>
+                <div class="relative z-10">
+                    <div class="flex justify-between items-center mb-3">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-mosque text-emerald-100"></i>
+                            <h3 class="font-bold text-sm">Jadwal Shalat</h3>
+                        </div>
+                        <span class="text-[10px] bg-white/20 px-2 py-1 rounded-full backdrop-blur-sm" id="prayer-location">Memuat...</span>
+                    </div>
+                    <div class="grid grid-cols-5 gap-2 text-center" id="prayer-times-container">
+                        <!-- Prayer times will be injected here -->
+                        <div class="col-span-5 text-xs text-emerald-100/70 py-2">Mengambil data waktu shalat...</div>
+                    </div>
+                    <p class="text-[9px] text-emerald-100/70 mt-3 text-center">*Berdasarkan zona waktu lokasi tujuan utama</p>
+                </div>
+            </div>
+
             <div class="relative border-l-2 border-brand-100 ml-3 space-y-6 pb-4" id="jadwal-list"></div>
         </div>
 
@@ -458,6 +484,28 @@
         return appState.trips.find(t => t.id === currentTripId);
     }
 
+    // Helper to get appropriate icon and vibrant colors based on trip title
+    function getTripTheme(title) {
+        const t = title.toLowerCase();
+        if(t.includes('gunung') || t.includes('hiking') || t.includes('papandayan') || t.includes('bromo') || t.includes('rinjani')) {
+            return { icon: 'fa-mountain', bg: 'from-emerald-400 to-teal-600', shadow: 'shadow-teal-500/40' };
+        }
+        if(t.includes('pantai') || t.includes('pulau') || t.includes('laut') || t.includes('bali') || t.includes('sea')) {
+            return { icon: 'fa-umbrella-beach', bg: 'from-cyan-400 to-blue-600', shadow: 'shadow-blue-500/40' };
+        }
+        if(t.includes('kota') || t.includes('city') || t.includes('bandung') || t.includes('jakarta')) {
+            return { icon: 'fa-city', bg: 'from-purple-500 to-indigo-600', shadow: 'shadow-indigo-500/40' };
+        }
+        if(t.includes('camp') || t.includes('kemah')) {
+            return { icon: 'fa-campground', bg: 'from-orange-400 to-red-500', shadow: 'shadow-orange-500/40' };
+        }
+        if(t.includes('luar negeri') || t.includes('flight') || t.includes('korea') || t.includes('jepang')) {
+            return { icon: 'fa-plane', bg: 'from-rose-400 to-pink-600', shadow: 'shadow-rose-500/40' };
+        }
+        // Default
+        return { icon: 'fa-suitcase-rolling', bg: 'from-brand-500 to-brand-700', shadow: 'shadow-brand-500/40' };
+    }
+
     async function loadDataFromJSONBin() {
         try {
             let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
@@ -575,8 +623,68 @@
             fab.innerHTML = '<i class="fa-solid fa-plus"></i>';
         }
 
+        // Fetch prayer times if navigating to Jadwal tab
+        if(tabId === 'jadwal') {
+            fetchPrayerTimes();
+        }
+
         document.getElementById('main-scroll').scrollTo(0,0);
         refreshUI();
+    }
+
+    async function fetchPrayerTimes() {
+        const container = document.getElementById('prayer-times-container');
+        const locLabel = document.getElementById('prayer-location');
+        
+        let c = getCurrentTrip(); 
+        if(!c) return;
+
+        // Determine a target date to fetch for. If targetDate exists, use that. Otherwise, use today.
+        let targetDateObj = c.trip.targetDate ? new Date(c.trip.targetDate) : new Date();
+        const year = targetDateObj.getFullYear();
+        const month = targetDateObj.getMonth() + 1; // 1-12
+        const date = targetDateObj.getDate();
+
+        // For simplicity in this demo, we'll default to a fixed location (e.g., Jakarta)
+        // In a full app, you might derive this from the trip title or a specific location field.
+        const defaultCity = "Jakarta";
+        const defaultCountry = "Indonesia";
+
+        try {
+            // Using Aladhan API (free, no auth required for basic endpoints)
+            // Note: We use https to avoid mixed content errors in iframes
+            const apiUrl = `https://api.aladhan.com/v1/timingsByCity/${date}-${month}-${year}?city=${defaultCity}&country=${defaultCountry}&method=11`; // Method 11 is Majelis Ulama Indonesia
+            
+            const response = await fetch(apiUrl);
+            const data = await response.json();
+
+            if (data && data.code === 200) {
+                const timings = data.data.timings;
+                locLabel.innerText = defaultCity;
+                
+                // Format the timings we want to show
+                const prayersToShow = [
+                    { name: 'Shubuh', time: timings.Fajr },
+                    { name: 'Dzuhur', time: timings.Dhuhr },
+                    { name: 'Ashar', time: timings.Asr },
+                    { name: 'Maghrib', time: timings.Maghrib },
+                    { name: 'Isya', time: timings.Isha }
+                ];
+
+                container.innerHTML = prayersToShow.map(p => `
+                    <div class="flex flex-col items-center bg-white/10 rounded-lg py-2 backdrop-blur-md border border-white/5">
+                        <span class="text-[9px] font-medium text-emerald-100 uppercase tracking-wider mb-1">${p.name}</span>
+                        <span class="text-xs font-bold">${p.time}</span>
+                    </div>
+                `).join('');
+            } else {
+                throw new Error("Invalid API response");
+            }
+        } catch (error) {
+            console.error("Error fetching prayer times:", error);
+            locLabel.innerText = "Error";
+            container.innerHTML = `<div class="col-span-5 text-[10px] text-red-200 py-2">Gagal memuat jadwal shalat. Periksa koneksi internet.</div>`;
+        }
     }
 
     function renderTrips() {
@@ -597,26 +705,47 @@
         // Sort descending by created date (using id as timestamp)
         const sortedTrips = [...appState.trips].sort((a,b) => b.id - a.id);
         
-        container.innerHTML = sortedTrips.map(t => {
+        container.innerHTML = sortedTrips.map((t, idx) => {
             const daysLeft = Math.ceil((new Date(t.trip.targetDate) - new Date()) / (1000 * 60 * 60 * 24));
-            const badge = daysLeft > 0 ? `<span class="bg-brand-50 text-brand-600 px-2 py-0.5 rounded text-[10px] font-bold">H-${daysLeft}</span>` : `<span class="bg-green-50 text-green-600 px-2 py-0.5 rounded text-[10px] font-bold">Selesai/Hari H</span>`;
+            const badge = daysLeft > 0 ? `<span class="bg-brand-50 text-brand-600 px-2 py-1 rounded-md text-[10px] font-bold shrink-0">H-${daysLeft}</span>` : `<span class="bg-green-50 text-green-600 px-2 py-1 rounded-md text-[10px] font-bold shrink-0">Hari H</span>`;
+            
+            const theme = getTripTheme(t.trip.title);
             
             return `
-            <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 hover:shadow-md transition cursor-pointer relative group" onclick="enterTrip(${t.id})">
-                <div class="flex justify-between items-start mb-2">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-50 to-brand-100 text-brand-600 flex items-center justify-center text-lg font-bold shrink-0">
-                        ${t.trip.title.charAt(0).toUpperCase()}
+            <div class="bg-white rounded-2xl p-4 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] border border-gray-100 hover:shadow-md hover:border-brand-200 transition-all cursor-pointer flex flex-col gap-3" onclick="enterTrip(${t.id})">
+                
+                <div class="flex items-start gap-3.5">
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br ${theme.bg} text-white flex items-center justify-center shrink-0 shadow-lg ${theme.shadow}">
+                        <i class="fa-solid ${theme.icon} text-xl"></i>
                     </div>
-                    <div class="flex gap-2">
-                        ${badge}
-                        <button onclick="event.stopPropagation(); confirmDelete('project', ${t.id})" class="text-gray-300 hover:text-red-500 w-6 h-6 flex items-center justify-center rounded-full"><i class="fa-solid fa-trash text-xs"></i></button>
+                    <div class="flex-1 min-w-0 pt-0.5">
+                        <div class="flex justify-between items-start gap-2">
+                            <h3 class="font-bold text-gray-900 text-base leading-tight line-clamp-2 pr-1">${t.trip.title}</h3>
+                            ${badge}
+                        </div>
                     </div>
                 </div>
-                <h3 class="font-bold text-gray-900 text-base mb-1 truncate">${t.trip.title}</h3>
-                <div class="flex items-center text-[11px] text-gray-500 gap-3">
-                    <span><i class="fa-regular fa-calendar mr-1"></i>${t.trip.dates}</span>
-                    <span><i class="fa-solid fa-users mr-1"></i>${t.participants.length} org</span>
+
+                <div class="flex items-center justify-between pt-3 mt-1 border-t border-gray-50/80">
+                    <div class="flex flex-wrap items-center text-[10px] font-medium gap-1.5 flex-1 min-w-0 pr-2">
+                        <span class="inline-flex items-center bg-blue-50 text-blue-700 px-2 py-1 rounded-md border border-blue-100/50 max-w-full">
+                            <i class="fa-regular fa-calendar mr-1.5 text-blue-500 shrink-0"></i>
+                            <span class="truncate">${t.trip.dates}</span>
+                        </span>
+                        <span class="inline-flex items-center bg-orange-50 text-orange-700 px-2 py-1 rounded-md border border-orange-100/50 shrink-0">
+                            <i class="fa-solid fa-user-group mr-1.5 text-orange-500"></i>${t.participants.length} Peserta
+                        </span>
+                    </div>
+                    <div class="flex gap-1.5 shrink-0">
+                        <button onclick="event.stopPropagation(); openModal('edit-project', ${t.id})" class="w-7 h-7 flex items-center justify-center rounded-lg bg-gray-50 text-gray-400 hover:text-brand-600 hover:bg-blue-50 transition-colors border border-gray-100" title="Edit Projek">
+                            <i class="fa-solid fa-pen text-[10px]"></i>
+                        </button>
+                        <button onclick="event.stopPropagation(); confirmDelete('project', ${t.id})" class="w-7 h-7 flex items-center justify-center rounded-lg bg-gray-50 text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors border border-gray-100" title="Hapus Projek">
+                            <i class="fa-solid fa-trash text-[10px]"></i>
+                        </button>
+                    </div>
                 </div>
+
             </div>
             `;
         }).join('');
@@ -794,6 +923,13 @@
                 mInput('Nama / Tujuan Trip', `<input type="text" id="m-p-title" placeholder="Cth: Eksplorasi Bromo" class="input-standard">`) +
                 mInput('Tanggal (Teks)', `<input type="text" id="m-p-dates" placeholder="Cth: 10-12 Nov 2026" class="input-standard">`) +
                 mInput('Tanggal Berangkat', `<input type="date" id="m-p-target" value="${td}" class="input-standard">`);
+        } else if (type === 'edit-project') {
+            title.innerText = 'Edit Projek Liburan';
+            let t = appState.trips.find(x => x.id == id);
+            body.innerHTML = 
+                mInput('Nama / Tujuan Trip', `<input type="text" id="m-p-title" value="${t.trip.title}" class="input-standard">`) +
+                mInput('Tanggal (Teks)', `<input type="text" id="m-p-dates" value="${t.trip.dates}" class="input-standard">`) +
+                mInput('Tanggal Berangkat', `<input type="date" id="m-p-target" value="${t.trip.targetDate}" class="input-standard">`);
         } else if (type === 'trip-modal') {
             title.innerText = 'Info Utama Perjalanan';
             body.innerHTML = 
@@ -847,7 +983,14 @@
         
         if(editType === 'add-project') {
             let title = document.getElementById('m-p-title').value;
-            if(!title) return alert("Judul projek wajib diisi");
+            if(!title) {
+                // Replacing alert with a visual cue for better UX inside iframes
+                const input = document.getElementById('m-p-title');
+                input.style.borderColor = '#ef4444';
+                input.style.boxShadow = '0 0 0 3px rgba(239,68,68,0.1)';
+                input.placeholder = 'Judul projek wajib diisi!';
+                return;
+            }
             let newTrip = {
                 id: id,
                 trip: { title: title, dates: document.getElementById('m-p-dates').value || 'TBD', duration: '-', targetDate: document.getElementById('m-p-target').value, desc: "" },
@@ -855,7 +998,28 @@
             };
             appState.trips.push(newTrip);
             renderTrips();
-        } 
+        } else if (editType === 'edit-project') {
+            let title = document.getElementById('m-p-title').value;
+            if(!title) {
+                const input = document.getElementById('m-p-title');
+                input.style.borderColor = '#ef4444';
+                input.style.boxShadow = '0 0 0 3px rgba(239,68,68,0.1)';
+                input.placeholder = 'Judul projek wajib diisi!';
+                return;
+            }
+            let t = appState.trips.find(x => x.id == editId);
+            if(t) {
+                t.trip.title = title;
+                t.trip.dates = document.getElementById('m-p-dates').value || 'TBD';
+                t.trip.targetDate = document.getElementById('m-p-target').value;
+                renderTrips();
+                
+                // Update detail views if we happened to edit the active one
+                if (currentTripId === editId) {
+                    renderDashboard();
+                }
+            }
+        }
         else {
             let c = getCurrentTrip(); if(!c) return; // Must be inside a trip
 
