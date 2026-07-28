@@ -10,6 +10,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- Library Tambahan -->
+    <!-- html2canvas untuk Share Gambar -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- SortableJS untuk Drag and Drop -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+
     <script>
         tailwind.config = {
             theme: {
@@ -105,7 +111,6 @@
         
         @keyframes slideUpFade { 0% { opacity: 0; transform: translateY(40px); } 100% { opacity: 1; transform: translateY(0); } }
         
-        /* New Elegant Dynamic Background */
         @keyframes gradientBG {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
@@ -117,7 +122,6 @@
             animation: gradientBG 12s ease infinite;
         }
 
-        /* Floating animation for icon */
         @keyframes float {
             0% { transform: translateY(0px); }
             50% { transform: translateY(-12px); }
@@ -131,15 +135,33 @@
         .animate-delay-1 { animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both; }
         .animate-delay-2 { animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both; }
         .animate-delay-3 { animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both; }
+
+        /* SortableJS drag styles */
+        .sortable-ghost { opacity: 0.4; background-color: #f3f4f6; }
+        .sortable-drag { cursor: grabbing !important; }
+        .drag-handle { cursor: grab; }
+        .drag-handle:active { cursor: grabbing; }
+
+        /* Toast Notification */
+        .toast {
+            position: absolute; top: 80px; left: 50%; transform: translateX(-50%);
+            background: rgba(17, 24, 39, 0.9); color: white; padding: 10px 20px;
+            border-radius: 20px; font-size: 13px; font-weight: 500;
+            z-index: 1000; opacity: 0; pointer-events: none;
+            transition: opacity 0.3s, transform 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 8px;
+        }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(10px); }
     </style>
 </head>
 <body>
 
 <div class="app-container" id="app">
     
-    <!-- Welcome Screen -->
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"><i class="fa-solid fa-circle-check text-green-400"></i> <span id="toast-msg">Pesan</span></div>
+
     <div id="welcome-screen" class="welcome-screen elegant-bg flex flex-col justify-between px-8 pb-12 pt-24 overflow-hidden">
-        
         <div class="relative z-10 flex flex-col items-center text-center animate-delay-1 mt-8">
             <div class="w-28 h-28 bg-white/70 backdrop-blur-xl rounded-[2rem] flex items-center justify-center shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-white mb-10 animate-float">
                 <i class="fa-solid fa-map-location-dot text-[3rem] text-brand-600"></i>
@@ -152,7 +174,6 @@
                 Simpel, elegan, dan rapi. Kelola jadwal, tim, logistik, hingga patungan liburanmu di satu tempat.
             </p>
         </div>
-        
         <div class="relative z-10 w-full animate-delay-3">
             <button onclick="startApp()" class="w-full bg-gray-900 text-white font-bold py-4 rounded-2xl shadow-xl active:scale-95 transition-all flex items-center justify-center gap-3 text-[16px] group hover:bg-gray-800">
                 Mulai Petualangan 
@@ -164,11 +185,9 @@
     <!-- Header -->
     <header class="pt-12 pb-4 px-5 sticky top-0 z-30 flex justify-between items-center bg-white/85 backdrop-blur-md border-b border-gray-100 shadow-sm">
         <div class="flex items-center gap-3.5 flex-1 overflow-hidden">
-            <!-- Back Button (Hidden by default, shown when inside a trip) -->
             <button id="back-btn" onclick="openTripList()" style="display: none;" class="w-10 h-10 shrink-0 rounded-full bg-gray-100 text-gray-700 flex items-center justify-center hover:bg-gray-200 transition">
                 <i class="fa-solid fa-arrow-left"></i>
             </button>
-            
             <div id="header-icon" class="w-11 h-11 shrink-0 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 text-white flex items-center justify-center shadow-lg shadow-brand-500/30">
                 <i class="fa-solid fa-plane-departure text-lg"></i>
             </div>
@@ -185,19 +204,15 @@
     </header>
 
     <main class="scroll-area px-5 pt-5" id="main-scroll">
-        
-        <!-- TRIPS LIST VIEW (HOME) -->
+        <!-- TRIPS LIST VIEW -->
         <div id="view-trips" class="tab-view active">
             <h2 class="text-xl font-bold text-gray-900 mb-1">Projek Liburanmu</h2>
             <p class="text-sm text-gray-500 mb-6">Pilih atau buat rencana perjalanan baru</p>
-            <div id="trips-container" class="space-y-4">
-                <!-- Trips will be rendered here -->
-            </div>
+            <div id="trips-container" class="space-y-4"></div>
         </div>
 
-        <!-- DASHBOARD VIEW (INSIDE A TRIP) -->
+        <!-- DASHBOARD VIEW -->
         <div id="view-dashboard" class="tab-view">
-            <!-- Hero Card -->
             <div class="bg-gradient-to-br from-brand-500 to-brand-700 rounded-2xl p-6 text-white relative overflow-hidden mb-6 shadow-lg shadow-blue-500/30">
                 <div class="absolute -right-6 -top-6 w-32 h-32 bg-white opacity-10 rounded-full"></div>
                 <div class="relative z-10">
@@ -214,7 +229,6 @@
                 </div>
             </div>
 
-            <!-- Stats -->
             <div class="grid grid-cols-2 gap-4 mb-6">
                 <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center gap-3 cursor-pointer" onclick="switchTab('peserta')">
                     <div class="w-10 h-10 rounded-full bg-orange-100 text-orange-500 flex items-center justify-center shrink-0"><i class="fa-solid fa-users"></i></div>
@@ -243,7 +257,15 @@
                 <i class="fa-solid fa-chevron-right text-gray-300 text-sm"></i>
             </div>
 
-            <!-- Catatan Trip / Destinasi Umum -->
+            <!-- WIDGET PRAKIRAAN CUACA -->
+            <h3 class="text-sm font-bold text-gray-900 mb-3">Prakiraan Cuaca (<span id="weather-city-label">...</span>)</h3>
+            <div class="bg-gradient-to-br from-sky-400 to-blue-600 shadow-lg shadow-blue-500/30 rounded-2xl p-4 mb-6 text-white relative overflow-hidden" id="weather-widget">
+                <div class="absolute -right-6 -top-6 w-32 h-32 bg-white opacity-10 rounded-full"></div>
+                <div id="weather-content" class="relative z-10 min-h-[70px] flex items-center justify-center">
+                    <p class="text-sm text-blue-100 text-center"><i class="fa-solid fa-circle-notch fa-spin mr-2"></i>Memuat cuaca...</p>
+                </div>
+            </div>
+
             <h3 class="text-sm font-bold text-gray-900 mb-3">Catatan Destinasi</h3>
             <div class="bg-white shadow-sm rounded-2xl p-4 border border-gray-100 flex gap-4 items-start mb-6">
                 <div class="w-12 h-12 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center flex-shrink-0 mt-1">
@@ -254,81 +276,28 @@
                         <h4 class="font-bold text-gray-900 text-sm" id="desc-title">Info Singkat</h4>
                         <button onclick="openModal('trip-desc')" class="text-gray-400 hover:text-brand-600"><i class="fa-solid fa-pen text-xs"></i></button>
                     </div>
-                    <p class="text-xs text-gray-500 leading-relaxed" id="dash-desc">Belum ada catatan deskripsi untuk perjalanan ini.</p>
+                    <p class="text-xs text-gray-500 leading-relaxed" id="dash-desc">Belum ada catatan deskripsi.</p>
                 </div>
             </div>
-
-            <!-- PAPANDAYAN SPECIFIC INFO (Diperlihatkan jika judul = papandayan) -->
+            
+            <!-- Papandayan Specific Info -->
             <div id="papandayan-specific-info" style="display: none;">
-                <h3 class="text-sm font-bold text-gray-900 mb-3">Rincian Estimasi Waktu Berdasarkan Destinasi</h3>
+                <h3 class="text-sm font-bold text-gray-900 mb-3">Rincian Estimasi Waktu (Papandayan)</h3>
                 <div class="bg-white shadow-sm rounded-2xl p-5 border border-gray-100 mb-6">
                     <div class="relative border-l-2 border-brand-100 ml-2 space-y-5 pb-1">
                         <div class="relative pl-5">
                             <div class="absolute w-3 h-3 bg-brand-500 rounded-full -left-[7px] top-1 shadow-sm ring-4 ring-white"></div>
                             <h4 class="text-xs font-bold text-gray-900">Area Kawah Aktif</h4>
-                            <p class="text-[11px] text-gray-500 mt-1 leading-relaxed"><i class="fa-regular fa-clock mr-1 text-brand-500"></i>30 – 45 menit (1,5 km) <br><span class="text-gray-400">Titik awal dari Camp David</span></p>
+                            <p class="text-[11px] text-gray-500 mt-1 leading-relaxed"><i class="fa-regular fa-clock mr-1 text-brand-500"></i>30 – 45 menit (1,5 km)</p>
                         </div>
-                        
                         <div class="relative pl-5">
                             <div class="absolute w-3 h-3 bg-brand-500 rounded-full -left-[7px] top-1 shadow-sm ring-4 ring-white"></div>
                             <h4 class="text-xs font-bold text-gray-900">Pondok Saladah (Area Camp)</h4>
-                            <p class="text-[11px] text-gray-500 mt-1 leading-relaxed"><i class="fa-regular fa-clock mr-1 text-brand-500"></i>1,5 – 2,5 jam (3 km) <br><span class="text-gray-400">Dari Camp David</span></p>
-                        </div>
-                        
-                        <div class="relative pl-5">
-                            <div class="absolute w-3 h-3 bg-brand-500 rounded-full -left-[7px] top-1 shadow-sm ring-4 ring-white"></div>
-                            <h4 class="text-xs font-bold text-gray-900">Hutan Mati</h4>
-                            <p class="text-[11px] text-gray-500 mt-1 leading-relaxed"><i class="fa-regular fa-clock mr-1 text-brand-500"></i>2 – 2,5 jam (3,5 km) <br><span class="text-gray-400">Dari Camp David</span></p>
-                        </div>
-
-                        <div class="relative pl-5">
-                            <div class="absolute w-3 h-3 bg-brand-500 rounded-full -left-[7px] top-1 shadow-sm ring-4 ring-white"></div>
-                            <h4 class="text-xs font-bold text-gray-900">Tegal Alun (Edelweiss)</h4>
-                            <p class="text-[11px] text-gray-500 mt-1 leading-relaxed"><i class="fa-regular fa-clock mr-1 text-brand-500"></i>2,5 – 3,5 jam (4,5 – 5 km) <br><span class="text-gray-400">Dari Camp David</span></p>
-                        </div>
-
-                        <div class="relative pl-5">
-                            <div class="absolute w-3 h-3 bg-brand-600 rounded-full -left-[7px] top-1 shadow-sm ring-4 ring-brand-100 flex items-center justify-center">
-                                <div class="w-1 h-1 bg-white rounded-full"></div>
-                            </div>
-                            <h4 class="text-xs font-bold text-brand-700">Puncak Top (±2.665 mdpl)</h4>
-                            <p class="text-[11px] text-gray-500 mt-1 leading-relaxed"><i class="fa-regular fa-clock mr-1 text-brand-600"></i>3 – 4 jam <br><span class="text-gray-400">Perjalanan mendaki</span></p>
-                        </div>
-                    </div>
-                </div>
-
-                <h3 class="text-sm font-bold text-gray-900 mb-3">Gambaran Jalur Pendakian</h3>
-                <div class="space-y-3 mb-6">
-                    <div class="bg-orange-50 border border-orange-100 rounded-2xl p-4 flex gap-3.5">
-                        <div class="w-9 h-9 rounded-full bg-orange-100 text-orange-500 flex items-center justify-center shrink-0">
-                            <i class="fa-solid fa-shoe-prints text-sm"></i>
-                        </div>
-                        <div>
-                            <h4 class="text-xs font-bold text-gray-900 mb-1">Medan Jalur</h4>
-                            <p class="text-[11px] text-gray-600 leading-relaxed pr-2">Jalur awal relatif landai melewati kawah berbatu dan semen/tangga buatan, lalu menanjak moderat menuju Pondok Saladah dan Hutan Mati.</p>
-                        </div>
-                    </div>
-                    <div class="bg-blue-50 border border-blue-100 rounded-2xl p-4 flex gap-3.5">
-                        <div class="w-9 h-9 rounded-full bg-blue-100 text-blue-500 flex items-center justify-center shrink-0">
-                            <i class="fa-solid fa-motorcycle text-sm"></i>
-                        </div>
-                        <div>
-                            <h4 class="text-xs font-bold text-gray-900 mb-1">Opsi Ojek</h4>
-                            <p class="text-[11px] text-gray-600 leading-relaxed pr-2">Terdapat layanan ojek lokal dari area bawah dekat Camp David menuju titik dekat persimpangan kawah untuk memotong waktu tempuh awal sekitar 30–45 menit.</p>
-                        </div>
-                    </div>
-                    <div class="bg-green-50 border border-green-100 rounded-2xl p-4 flex gap-3.5">
-                        <div class="w-9 h-9 rounded-full bg-green-100 text-green-500 flex items-center justify-center shrink-0">
-                            <i class="fa-solid fa-stopwatch text-sm"></i>
-                        </div>
-                        <div>
-                            <h4 class="text-xs font-bold text-gray-900 mb-1">Durasi Tektok (One Day Trip)</h4>
-                            <p class="text-[11px] text-gray-600 leading-relaxed pr-2">Bagi pendaki one day trip (pergi-pulang), total waktu perjalanan bersih berkisar antara 5 hingga 7 jam termasuk istirahat.</p>
+                            <p class="text-[11px] text-gray-500 mt-1 leading-relaxed"><i class="fa-regular fa-clock mr-1 text-brand-500"></i>1,5 – 2,5 jam (3 km)</p>
                         </div>
                     </div>
                 </div>
             </div>
-            <!-- END OF PAPANDAYAN SPECIFIC INFO -->
         </div>
 
         <!-- PESERTA VIEW -->
@@ -339,11 +308,19 @@
         </div>
 
         <!-- JADWAL VIEW -->
-        <div id="view-jadwal" class="tab-view">
-            <h2 class="text-xl font-bold text-gray-900 mb-1">Jadwal Perjalanan</h2>
-            <p class="text-sm text-gray-500 mb-4">Rencana aktivitas (Itinerary)</p>
+        <div id="view-jadwal" class="tab-view relative">
+            <div class="flex justify-between items-end mb-4">
+                <div>
+                    <h2 class="text-xl font-bold text-gray-900 mb-1">Jadwal Perjalanan</h2>
+                    <p class="text-sm text-gray-500">Rencana aktivitas (Itinerary)</p>
+                </div>
+                <!-- Tombol Share -->
+                <button onclick="openShareOptions()" class="flex items-center gap-2 bg-brand-50 text-brand-600 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-brand-100 transition">
+                    <i class="fa-solid fa-share-nodes"></i> Bagikan
+                </button>
+            </div>
             
-            <div class="bg-gradient-to-r from-emerald-500 to-teal-600 rounded-xl p-4 shadow-sm text-white mb-6 relative overflow-hidden">
+            <div class="bg-gradient-to-r from-emerald-500 to-teal-600 rounded-xl p-4 shadow-sm text-white mb-6 relative overflow-hidden" data-html2canvas-ignore>
                 <div class="absolute -right-4 -top-4 w-24 h-24 bg-white opacity-10 rounded-full"></div>
                 <div class="relative z-10">
                     <div class="flex justify-between items-center mb-3">
@@ -354,14 +331,19 @@
                         <span class="text-[10px] bg-white/20 px-2 py-1 rounded-full backdrop-blur-sm" id="prayer-location">Memuat...</span>
                     </div>
                     <div class="grid grid-cols-5 gap-2 text-center" id="prayer-times-container">
-                        <!-- Prayer times will be injected here -->
                         <div class="col-span-5 text-xs text-emerald-100/70 py-2">Mengambil data waktu shalat...</div>
                     </div>
-                    <p class="text-[9px] text-emerald-100/70 mt-3 text-center">*Berdasarkan zona waktu lokasi tujuan utama</p>
                 </div>
             </div>
 
-            <div class="relative border-l-2 border-brand-100 ml-3 space-y-6 pb-4" id="jadwal-list"></div>
+            <!-- Wrapper for Export Image -->
+            <div id="jadwal-export-wrapper" class="bg-gray-50 rounded-lg pb-4">
+                <div id="export-header" style="display:none;" class="p-4 border-b border-gray-200 mb-2">
+                    <h2 class="text-lg font-bold text-brand-600" id="export-title">Trip Itinerary</h2>
+                    <p class="text-xs text-gray-500" id="export-date">Tanggal</p>
+                </div>
+                <div class="relative border-l-2 border-brand-100 ml-3 space-y-2 pb-4" id="jadwal-list"></div>
+            </div>
         </div>
 
         <!-- BARANG VIEW -->
@@ -369,7 +351,14 @@
             <h2 class="text-xl font-bold text-gray-900 mb-1">Logistik & Peralatan</h2>
             <p class="text-sm text-gray-500 mb-4">Ceklis perlengkapan regu</p>
             
-            <div class="bg-white shadow-sm rounded-xl p-4 mb-5 border border-gray-100 sticky top-16 z-10">
+            <!-- Filter Kategori Barang -->
+            <div class="flex gap-2 mb-4 bg-gray-200/60 p-1.5 rounded-xl sticky top-16 z-20 backdrop-blur-md">
+                <button onclick="setLogisticsFilter('all')" id="flt-all" class="flex-1 py-1.5 text-[11px] font-bold rounded-lg bg-white shadow-sm text-brand-600 transition-all">Semua</button>
+                <button onclick="setLogisticsFilter('pending')" id="flt-pending" class="flex-1 py-1.5 text-[11px] font-bold rounded-lg text-gray-500 hover:text-gray-700 transition-all">Belum Selesai</button>
+                <button onclick="setLogisticsFilter('done')" id="flt-done" class="flex-1 py-1.5 text-[11px] font-bold rounded-lg text-gray-500 hover:text-gray-700 transition-all">Selesai</button>
+            </div>
+
+            <div class="bg-white shadow-sm rounded-xl p-4 mb-5 border border-gray-100">
                 <div class="flex justify-between items-center mb-2">
                     <span class="text-xs font-semibold text-gray-600">Progress Pengecekan</span>
                     <span class="text-xs font-bold text-brand-600" id="chk-pct">0%</span>
@@ -378,7 +367,7 @@
                     <div id="chk-bar" class="bg-brand-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
                 </div>
             </div>
-            <div id="barang-list" class="space-y-3"></div>
+            <div id="barang-list" class="space-y-3 pb-4"></div>
         </div>
 
         <!-- BIAYA VIEW -->
@@ -395,12 +384,10 @@
         </div>
     </main>
 
-    <!-- Floating Action Button -->
     <button id="main-fab" class="fab w-12 h-12 bg-brand-600 hover:bg-brand-700 text-white rounded-full flex items-center justify-center text-lg shadow-lg shadow-brand-500/40 transition-transform active:scale-95" onclick="handleFabClick()">
         <i class="fa-solid fa-plus"></i>
     </button>
 
-    <!-- Bottom Navigation (Hidden on Trips List) -->
     <nav class="bottom-nav hide" id="main-bottom-nav">
         <button class="nav-item active" onclick="switchTab('dashboard')" data-tab="dashboard">
             <i class="fa-solid fa-house"></i><span>Detail</span>
@@ -419,7 +406,7 @@
         </button>
     </nav>
 
-    <!-- Bottom Sheet Modal -->
+    <!-- Bottom Sheet Modal Umum -->
     <div id="sheet-overlay" class="sheet-overlay flex flex-col justify-end">
         <div class="absolute inset-0" onclick="closeModal()"></div>
         <div class="bottom-sheet flex-shrink-0">
@@ -431,7 +418,7 @@
                 </button>
             </div>
             <div id="modal-body" class="p-5 overflow-y-auto max-h-[60vh] space-y-3"></div>
-            <div class="p-5 pt-0 pb-8">
+            <div class="p-5 pt-0 pb-8" id="modal-footer">
                 <button onclick="saveModal()" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold py-3.5 rounded-xl shadow-md active:scale-95 transition">
                     Simpan
                 </button>
@@ -460,13 +447,17 @@
     const BIN_ID = '6a6847d4da38895dfe99f4aa';
     const API_KEY = '$2a$10$ns1OSogNiANZAJ/k6optMe3/GND7i84vrBQY7zzm.l12JR0mNdD5u';
 
-    // State is now an object containing an array of 'trips' (projects)
     let appState = { trips: [] };
-    let currentTripId = null; // To track which trip we are viewing
-    let currentTab = 'trips'; // 'trips' is the home view
+    let currentTripId = null;
+    let currentTab = 'trips';
     let editId = null;
     let editType = null;
     let pendingDelete = { type: null, id: null };
+    
+    // Fitur Baru: State untuk filter barang & penampung instance sortable
+    let currentLogisticsFilter = 'all'; 
+    let sortableInstances = [];
+
     const colors = ['#3b82f6', '#8b5cf6', '#ef4444', '#10b981', '#f59e0b', '#ec4899', '#14b8a6'];
 
     const formatRp = (num) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num);
@@ -478,63 +469,41 @@
         return `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]}`;
     };
 
-    // Helper to get the currently active trip object
+    function showToast(message) {
+        const t = document.getElementById('toast');
+        document.getElementById('toast-msg').innerText = message;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
     function getCurrentTrip() {
         if (!currentTripId) return null;
         return appState.trips.find(t => t.id === currentTripId);
     }
 
-    // Helper to get appropriate icon and vibrant colors based on trip title
     function getTripTheme(title) {
         const t = title.toLowerCase();
-        if(t.includes('gunung') || t.includes('hiking') || t.includes('papandayan') || t.includes('bromo') || t.includes('rinjani')) {
-            return { icon: 'fa-mountain', bg: 'from-emerald-400 to-teal-600', shadow: 'shadow-teal-500/40' };
-        }
-        if(t.includes('pantai') || t.includes('pulau') || t.includes('laut') || t.includes('bali') || t.includes('sea')) {
-            return { icon: 'fa-umbrella-beach', bg: 'from-cyan-400 to-blue-600', shadow: 'shadow-blue-500/40' };
-        }
-        if(t.includes('kota') || t.includes('city') || t.includes('bandung') || t.includes('jakarta')) {
-            return { icon: 'fa-city', bg: 'from-purple-500 to-indigo-600', shadow: 'shadow-indigo-500/40' };
-        }
-        if(t.includes('camp') || t.includes('kemah')) {
-            return { icon: 'fa-campground', bg: 'from-orange-400 to-red-500', shadow: 'shadow-orange-500/40' };
-        }
-        if(t.includes('luar negeri') || t.includes('flight') || t.includes('korea') || t.includes('jepang')) {
-            return { icon: 'fa-plane', bg: 'from-rose-400 to-pink-600', shadow: 'shadow-rose-500/40' };
-        }
-        // Default
+        if(t.includes('gunung') || t.includes('hiking') || t.includes('papandayan') || t.includes('bromo')) return { icon: 'fa-mountain', bg: 'from-emerald-400 to-teal-600', shadow: 'shadow-teal-500/40' };
+        if(t.includes('pantai') || t.includes('pulau') || t.includes('bali')) return { icon: 'fa-umbrella-beach', bg: 'from-cyan-400 to-blue-600', shadow: 'shadow-blue-500/40' };
+        if(t.includes('kota') || t.includes('bandung') || t.includes('jakarta')) return { icon: 'fa-city', bg: 'from-purple-500 to-indigo-600', shadow: 'shadow-indigo-500/40' };
+        if(t.includes('camp') || t.includes('kemah')) return { icon: 'fa-campground', bg: 'from-orange-400 to-red-500', shadow: 'shadow-orange-500/40' };
+        if(t.includes('luar negeri') || t.includes('flight')) return { icon: 'fa-plane', bg: 'from-rose-400 to-pink-600', shadow: 'shadow-rose-500/40' };
         return { icon: 'fa-suitcase-rolling', bg: 'from-brand-500 to-brand-700', shadow: 'shadow-brand-500/40' };
     }
 
     async function loadDataFromJSONBin() {
         try {
-            let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
-                headers: { 'X-Master-Key': API_KEY }
-            });
+            let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, { headers: { 'X-Master-Key': API_KEY } });
             let json = await res.json();
-            
             if (json && json.record) {
-                // Migration Logic: If the JSON is old format (single trip), convert it to array format
-                if (json.record.trips) {
-                    appState = json.record; // New format
-                } else if (json.record.trip) {
-                    // Old format detected
-                    appState.trips = [{
-                        id: Date.now(),
-                        trip: json.record.trip,
-                        participants: json.record.participants || [],
-                        itinerary: json.record.itinerary || [],
-                        checklist: json.record.checklist || [],
-                        budget: json.record.budget || []
-                    }];
-                    saveDataToJSONBin(); // Save the new format immediately
+                if (json.record.trips) appState = json.record; 
+                else if (json.record.trip) {
+                    appState.trips = [{ id: Date.now(), trip: json.record.trip, participants: json.record.participants || [], itinerary: json.record.itinerary || [], checklist: json.record.checklist || [], budget: json.record.budget || [] }];
+                    saveDataToJSONBin(); 
                 }
-                
                 refreshUI();
             }
-        } catch (e) {
-            console.error("Gagal memuat data", e);
-        }
+        } catch (e) { console.error("Gagal memuat data", e); }
     }
 
     async function saveDataToJSONBin() {
@@ -544,9 +513,7 @@
                 headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
                 body: JSON.stringify(appState)
             });
-        } catch (e) {
-            console.error("Gagal menyimpan data", e);
-        }
+        } catch (e) { console.error("Gagal menyimpan data", e); }
     }
 
     function refreshUI() {
@@ -560,74 +527,46 @@
         }
     }
 
-    // Open the home screen (list of all projects)
     function openTripList() {
         currentTripId = null;
         currentTab = 'trips';
-        
-        // Update Header
         document.getElementById('back-btn').style.display = 'none';
         document.getElementById('header-icon').style.display = 'flex';
         document.getElementById('header-title').innerText = 'Daftar Perjalanan';
         document.getElementById('header-subtitle').innerHTML = `<i class="fa-solid fa-earth-asia text-[10px]"></i> Semua Projek Liburan`;
-        
-        // Hide bottom nav
         document.getElementById('main-bottom-nav').classList.add('hide');
-        
-        // Show trips view, hide others
         document.querySelectorAll('.tab-view').forEach(el => el.classList.remove('active'));
         document.getElementById('view-trips').classList.add('active');
-        
-        // FAB logic
         document.getElementById('main-fab').classList.remove('hidden');
         document.getElementById('main-fab').innerHTML = '<i class="fa-solid fa-folder-plus"></i>';
-
         document.getElementById('main-scroll').scrollTo(0,0);
         renderTrips();
     }
 
-    // Go inside a specific trip project
     function enterTrip(id) {
         currentTripId = id;
         let cTrip = getCurrentTrip();
-        
-        // Update Header
         document.getElementById('back-btn').style.display = 'flex';
         document.getElementById('header-icon').style.display = 'none';
         document.getElementById('header-title').innerText = cTrip.trip.title;
         document.getElementById('header-subtitle').innerHTML = `<i class="fa-regular fa-calendar text-[10px]"></i> ${cTrip.trip.dates}`;
-        
-        // Show bottom nav
         document.getElementById('main-bottom-nav').classList.remove('hide');
-        
         switchTab('dashboard');
     }
 
-    // Switch tabs inside a project
     function switchTab(tabId) {
         document.querySelectorAll('.tab-view').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-        
         document.getElementById(`view-${tabId}`).classList.add('active');
         let navItem = document.querySelector(`.nav-item[data-tab="${tabId}"]`);
         if(navItem) navItem.classList.add('active');
-        
         currentTab = tabId;
         const fab = document.getElementById('main-fab');
+        if(tabId === 'dashboard') fab.classList.add('hidden');
+        else { fab.classList.remove('hidden'); fab.innerHTML = '<i class="fa-solid fa-plus"></i>'; }
         
-        // FAB Visibility
-        if(tabId === 'dashboard') {
-            fab.classList.add('hidden');
-        } else {
-            fab.classList.remove('hidden');
-            fab.innerHTML = '<i class="fa-solid fa-plus"></i>';
-        }
-
-        // Fetch prayer times if navigating to Jadwal tab
-        if(tabId === 'jadwal') {
-            fetchPrayerTimes();
-        }
-
+        if(tabId === 'jadwal') fetchPrayerTimes();
+        
         document.getElementById('main-scroll').scrollTo(0,0);
         refreshUI();
     }
@@ -635,219 +574,331 @@
     async function fetchPrayerTimes() {
         const container = document.getElementById('prayer-times-container');
         const locLabel = document.getElementById('prayer-location');
-        
-        let c = getCurrentTrip(); 
-        if(!c) return;
-
-        // Determine a target date to fetch for. If targetDate exists, use that. Otherwise, use today.
+        let c = getCurrentTrip(); if(!c) return;
         let targetDateObj = c.trip.targetDate ? new Date(c.trip.targetDate) : new Date();
-        const year = targetDateObj.getFullYear();
-        const month = targetDateObj.getMonth() + 1; // 1-12
-        const date = targetDateObj.getDate();
-
-        // For simplicity in this demo, we'll default to a fixed location (e.g., Jakarta)
-        // In a full app, you might derive this from the trip title or a specific location field.
-        const defaultCity = "Jakarta";
-        const defaultCountry = "Indonesia";
-
+        const year = targetDateObj.getFullYear(), month = targetDateObj.getMonth() + 1, date = targetDateObj.getDate();
+        
+        // MENGGUNAKAN KOTA DINAMIS (Jika kosong, fallback ke Jakarta)
+        const defaultCity = c.trip.city || "Jakarta";
+        
         try {
-            // Using Aladhan API (free, no auth required for basic endpoints)
-            // Note: We use https to avoid mixed content errors in iframes
-            const apiUrl = `https://api.aladhan.com/v1/timingsByCity/${date}-${month}-${year}?city=${defaultCity}&country=${defaultCountry}&method=11`; // Method 11 is Majelis Ulama Indonesia
-            
-            const response = await fetch(apiUrl);
+            const response = await fetch(`https://api.aladhan.com/v1/timingsByCity/${date}-${month}-${year}?city=${defaultCity}&country=Indonesia&method=11`);
             const data = await response.json();
-
             if (data && data.code === 200) {
                 const timings = data.data.timings;
                 locLabel.innerText = defaultCity;
-                
-                // Format the timings we want to show
-                const prayersToShow = [
-                    { name: 'Shubuh', time: timings.Fajr },
-                    { name: 'Dzuhur', time: timings.Dhuhr },
-                    { name: 'Ashar', time: timings.Asr },
-                    { name: 'Maghrib', time: timings.Maghrib },
-                    { name: 'Isya', time: timings.Isha }
+                const p = [
+                    { name: 'Shubuh', time: timings.Fajr }, { name: 'Dzuhur', time: timings.Dhuhr },
+                    { name: 'Ashar', time: timings.Asr }, { name: 'Maghrib', time: timings.Maghrib }, { name: 'Isya', time: timings.Isha }
                 ];
-
-                container.innerHTML = prayersToShow.map(p => `
+                container.innerHTML = p.map(x => `
                     <div class="flex flex-col items-center bg-white/10 rounded-lg py-2 backdrop-blur-md border border-white/5">
-                        <span class="text-[9px] font-medium text-emerald-100 uppercase tracking-wider mb-1">${p.name}</span>
-                        <span class="text-xs font-bold">${p.time}</span>
-                    </div>
-                `).join('');
-            } else {
-                throw new Error("Invalid API response");
+                        <span class="text-[9px] font-medium text-emerald-100 uppercase tracking-wider mb-1">${x.name}</span>
+                        <span class="text-xs font-bold">${x.time}</span>
+                    </div>`).join('');
             }
         } catch (error) {
-            console.error("Error fetching prayer times:", error);
             locLabel.innerText = "Error";
-            container.innerHTML = `<div class="col-span-5 text-[10px] text-red-200 py-2">Gagal memuat jadwal shalat. Periksa koneksi internet.</div>`;
+            container.innerHTML = `<div class="col-span-5 text-[10px] text-red-200 py-2">Gagal memuat jadwal shalat.</div>`;
         }
     }
 
     function renderTrips() {
         const container = document.getElementById('trips-container');
         if (appState.trips.length === 0) {
-            container.innerHTML = `
-                <div class="text-center py-10 bg-white rounded-2xl border border-dashed border-gray-300">
-                    <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-3 text-gray-400 text-2xl">
-                        <i class="fa-solid fa-plane"></i>
-                    </div>
-                    <p class="text-sm font-semibold text-gray-700">Belum ada projek liburan</p>
-                    <p class="text-xs text-gray-400 mt-1">Klik tombol + di bawah untuk membuat baru.</p>
-                </div>
-            `;
-            return;
+            container.innerHTML = `<div class="text-center py-10 bg-white rounded-2xl border border-dashed border-gray-300"><p class="text-sm font-semibold text-gray-700 mt-2">Belum ada projek liburan</p></div>`; return;
         }
-
-        // Sort descending by created date (using id as timestamp)
         const sortedTrips = [...appState.trips].sort((a,b) => b.id - a.id);
-        
-        container.innerHTML = sortedTrips.map((t, idx) => {
+        container.innerHTML = sortedTrips.map(t => {
             const daysLeft = Math.ceil((new Date(t.trip.targetDate) - new Date()) / (1000 * 60 * 60 * 24));
             const badge = daysLeft > 0 ? `<span class="bg-brand-50 text-brand-600 px-2 py-1 rounded-md text-[10px] font-bold shrink-0">H-${daysLeft}</span>` : `<span class="bg-green-50 text-green-600 px-2 py-1 rounded-md text-[10px] font-bold shrink-0">Hari H</span>`;
-            
             const theme = getTripTheme(t.trip.title);
-            
             return `
-            <div class="bg-white rounded-2xl p-4 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] border border-gray-100 hover:shadow-md hover:border-brand-200 transition-all cursor-pointer flex flex-col gap-3" onclick="enterTrip(${t.id})">
-                
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 cursor-pointer flex flex-col gap-3" onclick="enterTrip(${t.id})">
                 <div class="flex items-start gap-3.5">
-                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br ${theme.bg} text-white flex items-center justify-center shrink-0 shadow-lg ${theme.shadow}">
-                        <i class="fa-solid ${theme.icon} text-xl"></i>
-                    </div>
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br ${theme.bg} text-white flex items-center justify-center shrink-0 shadow-lg ${theme.shadow}"><i class="fa-solid ${theme.icon} text-xl"></i></div>
                     <div class="flex-1 min-w-0 pt-0.5">
-                        <div class="flex justify-between items-start gap-2">
-                            <h3 class="font-bold text-gray-900 text-base leading-tight line-clamp-2 pr-1">${t.trip.title}</h3>
-                            ${badge}
-                        </div>
+                        <div class="flex justify-between items-start gap-2"><h3 class="font-bold text-gray-900 text-base leading-tight line-clamp-2 pr-1">${t.trip.title}</h3>${badge}</div>
                     </div>
                 </div>
-
                 <div class="flex items-center justify-between pt-3 mt-1 border-t border-gray-50/80">
                     <div class="flex flex-wrap items-center text-[10px] font-medium gap-1.5 flex-1 min-w-0 pr-2">
-                        <span class="inline-flex items-center bg-blue-50 text-blue-700 px-2 py-1 rounded-md border border-blue-100/50 max-w-full">
-                            <i class="fa-regular fa-calendar mr-1.5 text-blue-500 shrink-0"></i>
-                            <span class="truncate">${t.trip.dates}</span>
-                        </span>
-                        <span class="inline-flex items-center bg-orange-50 text-orange-700 px-2 py-1 rounded-md border border-orange-100/50 shrink-0">
-                            <i class="fa-solid fa-user-group mr-1.5 text-orange-500"></i>${t.participants.length} Peserta
-                        </span>
+                        <span class="inline-flex items-center bg-blue-50 text-blue-700 px-2 py-1 rounded-md"><i class="fa-regular fa-calendar mr-1.5"></i><span class="truncate">${t.trip.dates}</span></span>
+                        <span class="inline-flex items-center bg-orange-50 text-orange-700 px-2 py-1 rounded-md"><i class="fa-solid fa-user-group mr-1.5"></i>${t.participants.length} Peserta</span>
                     </div>
                     <div class="flex gap-1.5 shrink-0">
-                        <button onclick="event.stopPropagation(); openModal('edit-project', ${t.id})" class="w-7 h-7 flex items-center justify-center rounded-lg bg-gray-50 text-gray-400 hover:text-brand-600 hover:bg-blue-50 transition-colors border border-gray-100" title="Edit Projek">
-                            <i class="fa-solid fa-pen text-[10px]"></i>
-                        </button>
-                        <button onclick="event.stopPropagation(); confirmDelete('project', ${t.id})" class="w-7 h-7 flex items-center justify-center rounded-lg bg-gray-50 text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors border border-gray-100" title="Hapus Projek">
-                            <i class="fa-solid fa-trash text-[10px]"></i>
-                        </button>
+                        <button onclick="event.stopPropagation(); openModal('edit-project', ${t.id})" class="w-7 h-7 flex items-center justify-center rounded-lg bg-gray-50 text-gray-400 hover:text-brand-600 border"><i class="fa-solid fa-pen text-[10px]"></i></button>
+                        <button onclick="event.stopPropagation(); confirmDelete('project', ${t.id})" class="w-7 h-7 flex items-center justify-center rounded-lg bg-gray-50 text-gray-400 hover:text-red-500 border"><i class="fa-solid fa-trash text-[10px]"></i></button>
                     </div>
                 </div>
-
-            </div>
-            `;
+            </div>`;
         }).join('');
     }
 
     function renderDashboard() {
         let c = getCurrentTrip(); if(!c) return;
-
-        // Update Header dynamic text if title changed
         document.getElementById('header-title').innerText = c.trip.title;
         document.getElementById('header-subtitle').innerHTML = `<i class="fa-regular fa-calendar text-[10px]"></i> ${c.trip.dates}`;
-
         document.getElementById('dash-title').innerText = c.trip.title || '';
         document.getElementById('dash-dates').innerText = c.trip.dates || '';
         document.getElementById('dash-duration').innerText = c.trip.duration || '';
-        document.getElementById('dash-desc').innerText = c.trip.desc || 'Belum ada catatan deskripsi untuk perjalanan ini.';
+        document.getElementById('dash-desc').innerText = c.trip.desc || 'Belum ada catatan deskripsi.';
         document.getElementById('stat-peserta').innerText = c.participants.length;
-
         let diff = Math.ceil((new Date(c.trip.targetDate) - new Date()) / (1000 * 60 * 60 * 24));
         document.getElementById('dash-countdown').innerText = `${diff > 0 ? diff : 0} Hari`;
-
         let done = c.checklist.filter(i => i.done).length;
-        let pct = c.checklist.length ? Math.round((done / c.checklist.length) * 100) : 0;
-        document.getElementById('stat-persiapan').innerText = `${pct}%`;
-
+        document.getElementById('stat-persiapan').innerText = `${c.checklist.length ? Math.round((done / c.checklist.length) * 100) : 0}%`;
         let total = c.budget.reduce((a,b) => a + b.amount, 0);
-        let num = c.participants.length || 1;
-        document.getElementById('stat-budget').innerText = formatRp(total/num).replace(',00','');
+        document.getElementById('stat-budget').innerText = formatRp(total/(c.participants.length || 1)).replace(',00','');
+        document.getElementById('papandayan-specific-info').style.display = c.trip.title.toLowerCase().includes('papandayan') ? 'block' : 'none';
+        
+        // Panggil API Cuaca setiap kali masuk Dashboard
+        fetchWeather();
+    }
 
-        // Logic for Papandayan specific info
-        const pInfo = document.getElementById('papandayan-specific-info');
-        if(c.trip.title.toLowerCase().includes('papandayan')) {
-            pInfo.style.display = 'block';
-        } else {
-            pInfo.style.display = 'none';
+    // FUNGSI BARU UNTUK MENGAMBIL CUACA DARI OPEN-METEO
+    async function fetchWeather() {
+        let c = getCurrentTrip(); if(!c) return;
+        const widget = document.getElementById('weather-content');
+        const label = document.getElementById('weather-city-label');
+        const city = c.trip.city || "Jakarta";
+        label.innerText = city;
+
+        widget.innerHTML = `<p class="text-sm text-blue-100 text-center w-full"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Mengambil data cuaca...</p>`;
+
+        try {
+            // 1. Cari Koordinat (Latitude, Longitude) berdasarkan Nama Kota (Geocoding)
+            const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=id`);
+            const geoData = await geoRes.json();
+            
+            if (!geoData.results || geoData.results.length === 0) {
+                widget.innerHTML = `<p class="text-xs text-blue-100 text-center w-full">Data kota tidak ditemukan. Cek kembali ejaan kota.</p>`;
+                return;
+            }
+            
+            const lat = geoData.results[0].latitude;
+            const lon = geoData.results[0].longitude;
+
+            // 2. Ambil Prakiraan Cuaca menggunakan koordinat
+            const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=3`);
+            const weatherData = await weatherRes.json();
+
+            const currentTemp = weatherData.current.temperature_2m;
+            const currentCode = weatherData.current.weather_code;
+            const wInfo = getWeatherInfo(currentCode);
+
+            // Buat HTML untuk prakiraan cuaca 2 hari kedepan
+            let dailyHtml = '';
+            for (let i = 1; i <= 2; i++) { // Besok (index 1) dan Lusa (index 2)
+                let dCode = weatherData.daily.weather_code[i];
+                let dMax = weatherData.daily.temperature_2m_max[i];
+                let dMin = weatherData.daily.temperature_2m_min[i];
+                let dInfo = getWeatherInfo(dCode);
+                let dDate = new Date(weatherData.daily.time[i]).toLocaleDateString('id-ID', { weekday: 'short' });
+                
+                dailyHtml += `
+                    <div class="flex flex-col items-center bg-white/20 rounded-xl p-2 backdrop-blur-sm border border-white/10 flex-1">
+                        <span class="text-[10px] font-semibold uppercase opacity-80">${dDate}</span>
+                        <i class="${dInfo.icon} text-lg my-1.5 shadow-sm"></i>
+                        <span class="text-[10px] font-bold tracking-tight">${Math.round(dMin)}° - ${Math.round(dMax)}°</span>
+                    </div>
+                `;
+            }
+
+            widget.innerHTML = `
+                <div class="flex items-center justify-between gap-4 w-full">
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-12 h-12 bg-white/25 rounded-full flex items-center justify-center text-2xl backdrop-blur-md shadow-inner">
+                            <i class="${wInfo.icon}"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-4xl font-black leading-none drop-shadow-sm tracking-tighter">${Math.round(currentTemp)}°<span class="text-lg font-medium opacity-70">C</span></h4>
+                            <p class="text-xs font-semibold opacity-90 mt-0.5">${wInfo.text}</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-2 flex-1 max-w-[130px]">
+                        ${dailyHtml}
+                    </div>
+                </div>
+            `;
+
+        } catch (error) {
+            console.error("Error weather:", error);
+            widget.innerHTML = `<p class="text-xs text-blue-100 text-center w-full">Gagal mengambil cuaca.</p>`;
         }
+    }
+
+    // Pemetaan WMO Weather Codes ke Bahasa Indonesia & Icon FontAwesome
+    function getWeatherInfo(code) {
+        const codes = {
+            0: { text: "Cerah", icon: "fa-solid fa-sun text-yellow-300" },
+            1: { text: "Cerah Berawan", icon: "fa-solid fa-cloud-sun text-gray-100" },
+            2: { text: "Berawan Sebagian", icon: "fa-solid fa-cloud-sun text-gray-200" },
+            3: { text: "Mendung", icon: "fa-solid fa-cloud text-gray-300" },
+            45: { text: "Berkabut", icon: "fa-solid fa-smog text-gray-300" },
+            48: { text: "Kabut Es", icon: "fa-solid fa-smog text-gray-300" },
+            51: { text: "Gerimis Ringan", icon: "fa-solid fa-cloud-rain text-blue-200" },
+            53: { text: "Gerimis Sedang", icon: "fa-solid fa-cloud-rain text-blue-200" },
+            55: { text: "Gerimis Lebat", icon: "fa-solid fa-cloud-rain text-blue-200" },
+            61: { text: "Hujan Ringan", icon: "fa-solid fa-cloud-showers-heavy text-blue-300" },
+            63: { text: "Hujan Sedang", icon: "fa-solid fa-cloud-showers-heavy text-blue-300" },
+            65: { text: "Hujan Lebat", icon: "fa-solid fa-cloud-showers-heavy text-blue-300" },
+            71: { text: "Salju Ringan", icon: "fa-solid fa-snowflake text-white" },
+            73: { text: "Salju Sedang", icon: "fa-solid fa-snowflake text-white" },
+            75: { text: "Salju Lebat", icon: "fa-solid fa-snowflake text-white" },
+            95: { text: "Badai Petir", icon: "fa-solid fa-cloud-bolt text-yellow-400" },
+            96: { text: "Badai Hujan Es", icon: "fa-solid fa-cloud-bolt text-yellow-400" },
+            99: { text: "Badai Petir Parah", icon: "fa-solid fa-cloud-bolt text-red-400" }
+        };
+        return codes[code] || { text: "Tidak Diketahui", icon: "fa-solid fa-cloud text-white" };
     }
 
     function renderPeserta() {
         let c = getCurrentTrip(); if(!c) return;
-        c.participants.sort((a,b) => a.name.localeCompare(b.name));
-        const html = c.participants.map((p, i) => {
-            const color = colors[i % colors.length];
-            return `
+        document.getElementById('peserta-list').innerHTML = c.participants.map((p, i) => `
             <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex items-center justify-between">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-lg text-white flex items-center justify-center font-bold text-sm" style="background-color: ${color}">
-                        ${p.name.substring(0,2).toUpperCase()}
-                    </div>
-                    <div>
-                        <h4 class="font-bold text-gray-900 text-sm">${p.name}</h4>
-                        <p class="text-xs text-gray-500">${p.role}</p>
-                    </div>
+                    <div class="w-10 h-10 rounded-lg text-white flex items-center justify-center font-bold text-sm" style="background-color: ${colors[i % colors.length]}">${p.name.substring(0,2).toUpperCase()}</div>
+                    <div><h4 class="font-bold text-gray-900 text-sm">${p.name}</h4><p class="text-xs text-gray-500">${p.role}</p></div>
                 </div>
                 <div class="flex gap-1">
-                    <button onclick="openModal('peserta', ${p.id})" class="w-8 h-8 rounded-full text-brand-600 flex items-center justify-center hover:bg-blue-50"><i class="fa-solid fa-pen text-xs"></i></button>
-                    <button onclick="confirmDelete('peserta', ${p.id})" class="w-8 h-8 rounded-full text-red-500 flex items-center justify-center hover:bg-red-50"><i class="fa-solid fa-trash text-xs"></i></button>
+                    <button onclick="openModal('peserta', ${p.id})" class="w-8 h-8 rounded-full text-brand-600 hover:bg-blue-50"><i class="fa-solid fa-pen text-xs"></i></button>
+                    <button onclick="confirmDelete('peserta', ${p.id})" class="w-8 h-8 rounded-full text-red-500 hover:bg-red-50"><i class="fa-solid fa-trash text-xs"></i></button>
                 </div>
-            </div>
-        `}).join('');
-        document.getElementById('peserta-list').innerHTML = html || '<p class="text-center text-gray-400 text-sm py-8">Belum ada data peserta.</p>';
+            </div>`).join('') || '<p class="text-center text-gray-400 text-sm py-8">Belum ada data peserta.</p>';
     }
 
+    // --- UPDATE: FUNGSI RENDER JADWAL (MENDUKUNG DRAG AND DROP) ---
     function renderJadwal() {
         let c = getCurrentTrip(); if(!c) return;
-        let html = ''; let currDay = '';
+        
+        // Hapus instance sortable lama agar tidak menumpuk
+        sortableInstances.forEach(instance => instance.destroy());
+        sortableInstances = [];
+
+        const container = document.getElementById('jadwal-list');
+        
+        if(c.itinerary.length === 0) {
+            container.innerHTML = '<p class="text-center text-gray-400 text-sm py-8">Belum ada data jadwal.</p>';
+            return;
+        }
+
+        // Kelompokkan itinerary berdasarkan hari (rawDate)
+        const grouped = {};
         c.itinerary.forEach(it => {
-            if(it.day !== currDay) {
-                html += `<div class="relative -left-3 mb-4 mt-6 flex items-center gap-2 z-10">
-                            <div class="bg-brand-500 w-2 h-6 rounded-r-md"></div>
-                            <h3 class="font-bold text-gray-900 text-sm">${it.day}</h3>
-                         </div>`;
-                currDay = it.day;
-            }
+            if(!grouped[it.rawDate]) grouped[it.rawDate] = { dayStr: it.day, items: [] };
+            grouped[it.rawDate].items.push(it);
+        });
+
+        let html = '';
+        Object.keys(grouped).forEach(date => {
             html += `
-                <div class="relative pl-6 pb-2">
-                    <div class="absolute w-3 h-3 bg-brand-500 border-2 border-white rounded-full -left-[7px] top-2 shadow-sm"></div>
-                    <div class="bg-white shadow-sm border border-gray-100 rounded-xl p-4 relative group">
-                        <div class="flex justify-between items-start mb-1">
-                            <h4 class="font-bold text-gray-900 text-sm"><i class="fa-solid ${it.type=='transit'?'fa-car text-orange-400':'fa-location-dot text-brand-500'} mr-1.5"></i> ${it.title}</h4>
-                            <span class="text-xs font-bold text-brand-600 bg-brand-50 px-2 py-1 rounded">${it.time}</span>
-                        </div>
-                        <p class="text-xs text-gray-500 leading-relaxed pr-10">${it.desc}</p>
-                        <div class="absolute bottom-3 right-3 flex gap-0.5">
-                             <button onclick="openModal('jadwal', ${it.id})" class="w-7 h-7 rounded bg-gray-50 text-gray-500 flex items-center justify-center hover:bg-blue-50 hover:text-brand-600"><i class="fa-solid fa-pen text-[10px]"></i></button>
-                             <button onclick="confirmDelete('jadwal', ${it.id})" class="w-7 h-7 rounded bg-gray-50 text-gray-500 flex items-center justify-center hover:bg-red-50 hover:text-red-500"><i class="fa-solid fa-trash text-[10px]"></i></button>
+                <div class="relative -left-3 mb-4 mt-6 flex items-center gap-2 z-10" data-html2canvas-ignore>
+                    <div class="bg-brand-500 w-2 h-6 rounded-r-md"></div>
+                    <h3 class="font-bold text-gray-900 text-sm">${grouped[date].dayStr}</h3>
+                </div>
+                <!-- Area ini yang akan dibuat Sortable -->
+                <div class="sortable-container space-y-3" data-date="${date}">
+            `;
+            
+            grouped[date].items.forEach(it => {
+                html += `
+                    <div class="relative pl-6" data-id="${it.id}">
+                        <div class="absolute w-3 h-3 bg-brand-500 border-2 border-white rounded-full -left-[7px] top-4 shadow-sm"></div>
+                        <div class="bg-white shadow-sm border border-gray-100 rounded-xl p-3 flex items-start group">
+                            <!-- Drag Handle -->
+                            <div class="drag-handle text-gray-300 hover:text-brand-500 px-2 py-3 flex items-center justify-center -ml-2 mr-1" data-html2canvas-ignore>
+                                <i class="fa-solid fa-grip-vertical"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex justify-between items-start mb-1">
+                                    <h4 class="font-bold text-gray-900 text-sm flex items-center gap-1.5"><i class="fa-solid ${it.type=='transit'?'fa-car text-orange-400':'fa-location-dot text-brand-500'}"></i> ${it.title}</h4>
+                                    <span class="text-xs font-bold text-brand-600 bg-brand-50 px-2 py-1 rounded">${it.time}</span>
+                                </div>
+                                <p class="text-[11px] text-gray-500 leading-relaxed pr-8">${it.desc}</p>
+                                <div class="absolute bottom-2 right-2 flex gap-0.5" data-html2canvas-ignore>
+                                     <button onclick="openModal('jadwal', ${it.id})" class="w-6 h-6 rounded bg-gray-50 text-gray-500 flex items-center justify-center hover:bg-blue-50 hover:text-brand-600"><i class="fa-solid fa-pen text-[10px]"></i></button>
+                                     <button onclick="confirmDelete('jadwal', ${it.id})" class="w-6 h-6 rounded bg-gray-50 text-gray-500 flex items-center justify-center hover:bg-red-50 hover:text-red-500"><i class="fa-solid fa-trash text-[10px]"></i></button>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            `;
+                `;
+            });
+            html += `</div>`;
         });
-        document.getElementById('jadwal-list').innerHTML = html || '<p class="text-center text-gray-400 text-sm py-8">Belum ada data jadwal.</p>';
+        
+        container.innerHTML = html;
+
+        // Inisialisasi Sortable JS untuk setiap kelompok hari
+        document.querySelectorAll('.sortable-container').forEach(el => {
+            const sortable = new Sortable(el, {
+                handle: '.drag-handle', // Handle khusus drag
+                animation: 150,
+                ghostClass: 'sortable-ghost',
+                dragClass: 'sortable-drag',
+                onEnd: function (evt) {
+                    // Logika ketika selesai digeser (update array global)
+                    const dateGroup = evt.to.getAttribute('data-date');
+                    // Ambil id item yang di-render sesuai urutan DOM yang baru
+                    const itemElements = Array.from(evt.to.children);
+                    
+                    // Ekstrak item untuk hari ini saja
+                    let currentDayItems = c.itinerary.filter(x => x.rawDate === dateGroup);
+                    let otherItems = c.itinerary.filter(x => x.rawDate !== dateGroup);
+
+                    // Re-order currentDayItems berdasarkan DOM
+                    let reorderedItems = [];
+                    itemElements.forEach(itemEl => {
+                        let id = parseInt(itemEl.getAttribute('data-id'));
+                        let found = currentDayItems.find(x => x.id === id);
+                        if(found) reorderedItems.push(found);
+                    });
+
+                    // Gabungkan kembali array
+                    c.itinerary = [...otherItems, ...reorderedItems];
+                    
+                    saveDataToJSONBin();
+                    showToast("Urutan jadwal diperbarui!");
+                }
+            });
+            sortableInstances.push(sortable);
+        });
+    }
+
+    // --- UPDATE: FILTER BARANG ---
+    function setLogisticsFilter(type) {
+        currentLogisticsFilter = type;
+        // Styling tombol filter
+        const btns = ['all', 'pending', 'done'];
+        btns.forEach(b => {
+            const el = document.getElementById(`flt-${b}`);
+            if(b === type) {
+                el.classList.remove('text-gray-500');
+                el.classList.add('bg-white', 'shadow-sm', 'text-brand-600');
+            } else {
+                el.classList.remove('bg-white', 'shadow-sm', 'text-brand-600');
+                el.classList.add('text-gray-500');
+            }
+        });
+        renderBarang();
     }
 
     function renderBarang() {
         let c = getCurrentTrip(); if(!c) return;
+        
+        // Progress Bar selalu dihitung dari total semua barang
         let done = c.checklist.filter(i => i.done).length;
         let pct = c.checklist.length ? Math.round((done / c.checklist.length) * 100) : 0;
         document.getElementById('chk-pct').innerText = `${pct}%`;
         document.getElementById('chk-bar').style.width = `${pct}%`;
 
-        const html = c.checklist.map(item => `
+        // Filter logika
+        let itemsToRender = c.checklist;
+        if(currentLogisticsFilter === 'pending') itemsToRender = c.checklist.filter(i => !i.done);
+        if(currentLogisticsFilter === 'done') itemsToRender = c.checklist.filter(i => i.done);
+
+        const html = itemsToRender.map(item => `
             <div class="bg-white shadow-sm border border-gray-100 rounded-xl p-4 flex items-start gap-3">
                 <input type="checkbox" class="app-checkbox mt-0.5 relative z-10" ${item.done?'checked':''} onchange="toggleCheck(${item.id})">
                 <div class="flex-1 min-w-0">
@@ -860,47 +911,142 @@
                     ${item.note ? `<p class="text-[11px] text-gray-500 bg-gray-50 p-2 rounded border border-gray-100">${item.note}</p>` : ''}
                 </div>
                 <div class="flex flex-col gap-1 ml-1 shrink-0">
-                    <button onclick="openModal('barang', ${item.id})" class="w-7 h-7 rounded text-gray-400 flex items-center justify-center hover:bg-blue-50 hover:text-brand-600"><i class="fa-solid fa-pen text-[10px]"></i></button>
-                    <button onclick="confirmDelete('barang', ${item.id})" class="w-7 h-7 rounded text-gray-400 flex items-center justify-center hover:bg-red-50 hover:text-red-500"><i class="fa-solid fa-trash text-[10px]"></i></button>
+                    <button onclick="openModal('barang', ${item.id})" class="w-7 h-7 rounded text-gray-400 hover:bg-blue-50 hover:text-brand-600"><i class="fa-solid fa-pen text-[10px]"></i></button>
+                    <button onclick="confirmDelete('barang', ${item.id})" class="w-7 h-7 rounded text-gray-400 hover:bg-red-50 hover:text-red-500"><i class="fa-solid fa-trash text-[10px]"></i></button>
                 </div>
             </div>
         `).join('');
-        document.getElementById('barang-list').innerHTML = html || '<p class="text-center text-gray-400 text-sm py-8">Belum ada logistik.</p>';
+        document.getElementById('barang-list').innerHTML = html || '<p class="text-center text-gray-400 text-sm py-8">Tidak ada data untuk filter ini.</p>';
     }
 
     function toggleCheck(id) {
         let c = getCurrentTrip(); if(!c) return;
         let item = c.checklist.find(x => x.id === id);
-        if(item) { 
-            item.done = !item.done; 
-            saveDataToJSONBin();
-            renderBarang(); renderDashboard(); 
-        }
+        if(item) { item.done = !item.done; saveDataToJSONBin(); renderBarang(); renderDashboard(); }
     }
 
     function renderBiaya() {
         let c = getCurrentTrip(); if(!c) return;
-        let total = c.budget.reduce((a,b) => a + b.amount, 0);
-        let num = c.participants.length || 1;
+        let total = c.budget.reduce((a,b) => a + b.amount, 0), num = c.participants.length || 1;
         document.getElementById('budget-total').innerText = formatRp(total);
         document.getElementById('budget-per-person').innerText = formatRp(total/num);
-
-        const html = c.budget.map(b => `
+        document.getElementById('biaya-list').innerHTML = c.budget.map(b => `
             <div class="bg-white shadow-sm border border-gray-100 rounded-xl p-4 flex justify-between items-center">
-                <div class="flex-1 pr-2">
-                    <h4 class="font-bold text-gray-900 text-sm mb-0.5">${b.name}</h4>
-                    <p class="text-[11px] text-gray-500">${b.note}</p>
-                </div>
+                <div class="flex-1 pr-2"><h4 class="font-bold text-gray-900 text-sm mb-0.5">${b.name}</h4><p class="text-[11px] text-gray-500">${b.note}</p></div>
                 <div class="text-right flex flex-col items-end">
                     <p class="font-bold text-gray-900 text-sm mb-2">${formatRp(b.amount).replace(',00','')}</p>
                     <div class="flex gap-1">
-                        <button onclick="openModal('biaya', ${b.id})" class="w-7 h-7 rounded bg-gray-50 text-gray-500 flex items-center justify-center hover:bg-blue-50 hover:text-brand-600"><i class="fa-solid fa-pen text-[10px]"></i></button>
-                        <button onclick="confirmDelete('biaya', ${b.id})" class="w-7 h-7 rounded bg-gray-50 text-gray-500 flex items-center justify-center hover:bg-red-50 hover:text-red-500"><i class="fa-solid fa-trash text-[10px]"></i></button>
+                        <button onclick="openModal('biaya', ${b.id})" class="w-7 h-7 rounded bg-gray-50 text-gray-500 hover:bg-blue-50 hover:text-brand-600"><i class="fa-solid fa-pen text-[10px]"></i></button>
+                        <button onclick="confirmDelete('biaya', ${b.id})" class="w-7 h-7 rounded bg-gray-50 text-gray-500 hover:bg-red-50 hover:text-red-500"><i class="fa-solid fa-trash text-[10px]"></i></button>
                     </div>
                 </div>
+            </div>`).join('') || '<p class="text-center text-gray-400 text-sm py-8">Belum ada pengeluaran.</p>';
+    }
+
+    // --- UPDATE: FUNGSI SHARE JADWAL ---
+    function openShareOptions() {
+        // Tampilkan Modal Pilihan Share (Teks atau Gambar)
+        const body = document.getElementById('modal-body');
+        document.getElementById('modal-title').innerText = 'Bagikan Itinerary';
+        document.getElementById('modal-footer').style.display = 'none'; // Sembunyikan tombol simpan
+        
+        body.innerHTML = `
+            <div class="space-y-3 pb-6 mt-2">
+                <button onclick="shareJadwalText()" class="w-full bg-white border border-gray-200 p-4 rounded-xl flex items-center gap-4 hover:bg-gray-50 transition shadow-sm text-left">
+                    <div class="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-xl shrink-0"><i class="fa-brands fa-whatsapp"></i></div>
+                    <div>
+                        <h4 class="font-bold text-gray-900 text-sm mb-1">Salin Teks</h4>
+                        <p class="text-xs text-gray-500 leading-tight">Format rapi, siap tempel (paste) ke chat WhatsApp regumu.</p>
+                    </div>
+                </button>
+                <button onclick="shareJadwalImage()" class="w-full bg-white border border-gray-200 p-4 rounded-xl flex items-center gap-4 hover:bg-gray-50 transition shadow-sm text-left">
+                    <div class="w-12 h-12 bg-brand-100 text-brand-600 rounded-full flex items-center justify-center text-xl shrink-0"><i class="fa-regular fa-image"></i></div>
+                    <div>
+                        <h4 class="font-bold text-gray-900 text-sm mb-1">Unduh Gambar</h4>
+                        <p class="text-xs text-gray-500 leading-tight">Simpan jadwal menjadi gambar (PNG) agar mudah dibaca offline.</p>
+                    </div>
+                </button>
             </div>
-        `).join('');
-        document.getElementById('biaya-list').innerHTML = html || '<p class="text-center text-gray-400 text-sm py-8">Belum ada pengeluaran.</p>';
+        `;
+        document.getElementById('sheet-overlay').classList.add('active');
+    }
+
+    function shareJadwalText() {
+        let c = getCurrentTrip(); if(!c) return;
+        let text = `✈️ *Itinerary: ${c.trip.title}*\n🗓️ ${c.trip.dates}\n\n`;
+        
+        let currDay = "";
+        c.itinerary.forEach(it => {
+            if(it.day !== currDay) {
+                text += `\n📍 *${it.day}*\n`;
+                currDay = it.day;
+            }
+            text += `  ${it.time} - ${it.title}\n`;
+            if(it.desc) text += `  _${it.desc}_\n`;
+        });
+
+        // Copy ke clipboard
+        navigator.clipboard.writeText(text).then(() => {
+            closeModal();
+            showToast("Teks jadwal berhasil disalin!");
+        }).catch(err => {
+            console.error('Failed to copy: ', err);
+            // Fallback tradisional (walau di modern browser navigator.clipboard biasanya aman)
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand("Copy");
+            textArea.remove();
+            closeModal();
+            showToast("Teks jadwal berhasil disalin!");
+        });
+    }
+
+    function shareJadwalImage() {
+        let c = getCurrentTrip(); if(!c) return;
+        closeModal();
+        showToast("Memproses gambar... Mohon tunggu.");
+
+        const wrapper = document.getElementById('jadwal-export-wrapper');
+        const header = document.getElementById('export-header');
+        
+        // Setup metadata khusus untuk dirender di gambar
+        document.getElementById('export-title').innerText = c.trip.title;
+        document.getElementById('export-date').innerText = c.trip.dates;
+        header.style.display = 'block'; // Munculkan header
+        wrapper.style.padding = '20px'; // Tambah padding agar lega
+
+        // Paksa scroll ke atas sementara agar render sempurna (karena bug html2canvas jika div ter-scroll)
+        const scrollArea = document.getElementById('main-scroll');
+        const originalScroll = scrollArea.scrollTop;
+        scrollArea.scrollTop = 0;
+
+        setTimeout(() => {
+            html2canvas(wrapper, {
+                scale: 2, // Kualitas HD
+                backgroundColor: '#f9fafb',
+                ignoreElements: (el) => el.hasAttribute('data-html2canvas-ignore') // Abaikan tombol edit/delete
+            }).then(canvas => {
+                // Kembalikan UI ke semula
+                header.style.display = 'none';
+                wrapper.style.padding = '0';
+                scrollArea.scrollTop = originalScroll;
+
+                // Download
+                const link = document.createElement('a');
+                link.download = `Itinerary_${c.trip.title.replace(/\s+/g, '_')}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                showToast("Gambar berhasil diunduh!");
+            }).catch(err => {
+                console.error(err);
+                header.style.display = 'none';
+                wrapper.style.padding = '0';
+                scrollArea.scrollTop = originalScroll;
+                showToast("Gagal merender gambar.");
+            });
+        }, 100);
     }
 
     function handleFabClick() { 
@@ -914,64 +1060,63 @@
         editType = type; editId = id;
         const body = document.getElementById('modal-body');
         const title = document.getElementById('modal-title');
+        const footer = document.getElementById('modal-footer');
         let c = getCurrentTrip();
+        
+        footer.style.display = 'block'; // Pastikan tombol simpan terlihat untuk form
         
         if (type === 'add-project') {
             title.innerText = 'Buat Projek Liburan Baru';
             let td = new Date().toISOString().split('T')[0];
-            body.innerHTML = 
-                mInput('Nama / Tujuan Trip', `<input type="text" id="m-p-title" placeholder="Cth: Eksplorasi Bromo" class="input-standard">`) +
-                mInput('Tanggal (Teks)', `<input type="text" id="m-p-dates" placeholder="Cth: 10-12 Nov 2026" class="input-standard">`) +
-                mInput('Tanggal Berangkat', `<input type="date" id="m-p-target" value="${td}" class="input-standard">`);
+            body.innerHTML = mInput('Nama / Tujuan Trip', `<input type="text" id="m-p-title" placeholder="Cth: Eksplorasi Bromo" class="input-standard">`) +
+                             mInput('Kota Destinasi Utama', `<input type="text" id="m-p-city" placeholder="Cth: Malang" class="input-standard">`) +
+                             mInput('Tanggal (Teks)', `<input type="text" id="m-p-dates" placeholder="Cth: 10-12 Nov 2026" class="input-standard">`) +
+                             mInput('Tanggal Berangkat', `<input type="date" id="m-p-target" value="${td}" class="input-standard">`);
         } else if (type === 'edit-project') {
             title.innerText = 'Edit Projek Liburan';
             let t = appState.trips.find(x => x.id == id);
-            body.innerHTML = 
-                mInput('Nama / Tujuan Trip', `<input type="text" id="m-p-title" value="${t.trip.title}" class="input-standard">`) +
-                mInput('Tanggal (Teks)', `<input type="text" id="m-p-dates" value="${t.trip.dates}" class="input-standard">`) +
-                mInput('Tanggal Berangkat', `<input type="date" id="m-p-target" value="${t.trip.targetDate}" class="input-standard">`);
+            body.innerHTML = mInput('Nama / Tujuan Trip', `<input type="text" id="m-p-title" value="${t.trip.title}" class="input-standard">`) +
+                             mInput('Kota Destinasi Utama', `<input type="text" id="m-p-city" value="${t.trip.city || ''}" class="input-standard">`) +
+                             mInput('Tanggal (Teks)', `<input type="text" id="m-p-dates" value="${t.trip.dates}" class="input-standard">`) +
+                             mInput('Tanggal Berangkat', `<input type="date" id="m-p-target" value="${t.trip.targetDate}" class="input-standard">`);
         } else if (type === 'trip-modal') {
             title.innerText = 'Info Utama Perjalanan';
-            body.innerHTML = 
-                mInput('Nama Trip', `<input type="text" id="m-title" value="${c.trip.title}" class="input-standard">`) +
-                mInput('Tanggal (Teks)', `<input type="text" id="m-dates" value="${c.trip.dates}" class="input-standard">`) +
-                mInput('Durasi', `<input type="text" id="m-dur" value="${c.trip.duration}" placeholder="Cth: 3 Hari 2 Malam" class="input-standard">`) +
-                mInput('Tanggal Berangkat', `<input type="date" id="m-target" value="${c.trip.targetDate}" class="input-standard">`);
+            body.innerHTML = mInput('Nama Trip', `<input type="text" id="m-title" value="${c.trip.title}" class="input-standard">`) +
+                             mInput('Kota Destinasi Utama', `<input type="text" id="m-city" value="${c.trip.city || ''}" class="input-standard">`) +
+                             mInput('Tanggal (Teks)', `<input type="text" id="m-dates" value="${c.trip.dates}" class="input-standard">`) +
+                             mInput('Durasi', `<input type="text" id="m-dur" value="${c.trip.duration}" placeholder="Cth: 3 Hari 2 Malam" class="input-standard">`) +
+                             mInput('Tanggal Berangkat', `<input type="date" id="m-target" value="${c.trip.targetDate}" class="input-standard">`);
         } else if (type === 'trip-desc') {
             title.innerText = 'Catatan Perjalanan';
-            body.innerHTML = mInput('Deskripsi / Catatan Umum', `<textarea id="m-desc" rows="4" class="input-standard" placeholder="Tambahkan informasi penting, aturan rombongan, atau catatan lainnya...">${c.trip.desc || ''}</textarea>`);
+            body.innerHTML = mInput('Deskripsi / Catatan Umum', `<textarea id="m-desc" rows="4" class="input-standard" placeholder="Tambahkan informasi penting, aturan rombongan...">${c.trip.desc || ''}</textarea>`);
         } else if (type === 'peserta') {
             title.innerText = id ? 'Edit Peserta' : 'Tambah Peserta';
             let p = id ? c.participants.find(x=>x.id==id) : {name:'', role:''};
-            body.innerHTML = 
-                mInput('Nama Lengkap', `<input type="text" id="m-name" value="${p.name}" class="input-standard">`) +
-                mInput('Peran (Cth: Ketua, Seksi Logistik)', `<input type="text" id="m-role" value="${p.role}" class="input-standard">`);
+            body.innerHTML = mInput('Nama Lengkap', `<input type="text" id="m-name" value="${p.name}" class="input-standard">`) +
+                             mInput('Peran (Cth: Ketua, Seksi Logistik)', `<input type="text" id="m-role" value="${p.role}" class="input-standard">`);
         } else if (type === 'jadwal') {
             title.innerText = id ? 'Edit Jadwal' : 'Tambah Jadwal';
             let j = id ? c.itinerary.find(x=>x.id==id) : {rawDate:'', time:'', title:'', type:'transit', desc:''};
-            body.innerHTML = 
-                mInput('Tanggal', `<input type="date" id="m-j-date" value="${j.rawDate}" class="input-standard">`) +
-                mInput('Jam', `<input type="time" id="m-j-time" value="${j.time}" class="input-standard">`) +
-                mInput('Kegiatan', `<input type="text" id="m-j-title" value="${j.title}" class="input-standard">`) +
-                mInput('Tipe Kegiatan', `<select id="m-j-type" class="input-standard"><option value="transit" ${j.type=='transit'?'selected':''}>Perjalanan / Transit</option><option value="activity" ${j.type=='activity'?'selected':''}>Aktivitas Utama</option></select>`) +
-                mInput('Catatan', `<textarea id="m-b-desc" rows="2" class="input-standard">${j.desc}</textarea>`);
+            body.innerHTML = mInput('Tanggal', `<input type="date" id="m-j-date" value="${j.rawDate}" class="input-standard">`) +
+                             mInput('Jam', `<input type="time" id="m-j-time" value="${j.time}" class="input-standard">`) +
+                             mInput('Kegiatan', `<input type="text" id="m-j-title" value="${j.title}" class="input-standard">`) +
+                             mInput('Tipe Kegiatan', `<select id="m-j-type" class="input-standard"><option value="transit" ${j.type=='transit'?'selected':''}>Perjalanan / Transit</option><option value="activity" ${j.type=='activity'?'selected':''}>Aktivitas Utama</option></select>`) +
+                             mInput('Catatan', `<textarea id="m-b-desc" rows="2" class="input-standard">${j.desc}</textarea>`);
         } else if (type === 'barang') {
             title.innerText = id ? 'Edit Logistik' : 'Tambah Logistik';
             let b = id ? c.checklist.find(x=>x.id==id) : {name:'', qty:'', cat:'', note:'', pic:''};
             let picOpts = `<option value="">-- Pilih Penanggung Jawab --</option>` + c.participants.map(p => `<option value="${p.name}" ${b.pic===p.name?'selected':''}>${p.name}</option>`).join('');
-            body.innerHTML = 
-                mInput('Nama Barang', `<input type="text" id="m-b-name" value="${b.name}" class="input-standard">`) +
-                mInput('Jumlah', `<input type="text" id="m-b-qty" value="${b.qty}" class="input-standard">`) +
-                mInput('Kategori', `<input type="text" id="m-b-cat" value="${b.cat}" placeholder="Kelompok/Individu" class="input-standard">`) +
-                mInput('Penanggung Jawab', `<select id="m-b-pic" class="input-standard">${picOpts}</select>`) +
-                mInput('Catatan Tambahan', `<textarea id="m-b-note" rows="2" class="input-standard">${b.note}</textarea>`);
+            body.innerHTML = mInput('Nama Barang', `<input type="text" id="m-b-name" value="${b.name}" class="input-standard">`) +
+                             mInput('Jumlah', `<input type="text" id="m-b-qty" value="${b.qty}" class="input-standard">`) +
+                             mInput('Kategori', `<input type="text" id="m-b-cat" value="${b.cat}" placeholder="Kelompok/Individu" class="input-standard">`) +
+                             mInput('Penanggung Jawab', `<select id="m-b-pic" class="input-standard">${picOpts}</select>`) +
+                             mInput('Catatan Tambahan', `<textarea id="m-b-note" rows="2" class="input-standard">${b.note}</textarea>`);
         } else if (type === 'biaya') {
             title.innerText = id ? 'Edit Biaya' : 'Tambah Biaya';
             let bi = id ? c.budget.find(x=>x.id==id) : {name:'', amount:'', note:''};
-            body.innerHTML = 
-                mInput('Pengeluaran', `<input type="text" id="m-bi-name" value="${bi.name}" class="input-standard">`) +
-                mInput('Total Harga (Rp)', `<input type="number" id="m-bi-amount" value="${bi.amount}" class="input-standard">`) +
-                mInput('Keterangan', `<input type="text" id="m-bi-note" value="${bi.note}" class="input-standard">`);
+            body.innerHTML = mInput('Pengeluaran', `<input type="text" id="m-bi-name" value="${bi.name}" class="input-standard">`) +
+                             mInput('Total Harga (Rp)', `<input type="number" id="m-bi-amount" value="${bi.amount}" class="input-standard">`) +
+                             mInput('Keterangan', `<input type="text" id="m-bi-note" value="${bi.note}" class="input-standard">`);
         }
         document.getElementById('sheet-overlay').classList.add('active');
     }
@@ -979,93 +1124,52 @@
     function closeModal() { document.getElementById('sheet-overlay').classList.remove('active'); }
 
     function saveModal() {
-        let id = editId || Date.now(); // Generate unique ID
+        let id = editId || Date.now(); 
         
         if(editType === 'add-project') {
             let title = document.getElementById('m-p-title').value;
-            if(!title) {
-                // Replacing alert with a visual cue for better UX inside iframes
-                const input = document.getElementById('m-p-title');
-                input.style.borderColor = '#ef4444';
-                input.style.boxShadow = '0 0 0 3px rgba(239,68,68,0.1)';
-                input.placeholder = 'Judul projek wajib diisi!';
-                return;
-            }
-            let newTrip = {
-                id: id,
-                trip: { title: title, dates: document.getElementById('m-p-dates').value || 'TBD', duration: '-', targetDate: document.getElementById('m-p-target').value, desc: "" },
-                participants: [], itinerary: [], checklist: [], budget: []
-            };
-            appState.trips.push(newTrip);
+            if(!title) { const i=document.getElementById('m-p-title'); i.style.borderColor='#ef4444'; i.placeholder='Judul wajib!'; return; }
+            appState.trips.push({ id: id, trip: { title: title, city: document.getElementById('m-p-city').value, dates: document.getElementById('m-p-dates').value || 'TBD', duration: '-', targetDate: document.getElementById('m-p-target').value, desc: "" }, participants: [], itinerary: [], checklist: [], budget: [] });
             renderTrips();
         } else if (editType === 'edit-project') {
             let title = document.getElementById('m-p-title').value;
-            if(!title) {
-                const input = document.getElementById('m-p-title');
-                input.style.borderColor = '#ef4444';
-                input.style.boxShadow = '0 0 0 3px rgba(239,68,68,0.1)';
-                input.placeholder = 'Judul projek wajib diisi!';
-                return;
-            }
+            if(!title) return;
             let t = appState.trips.find(x => x.id == editId);
-            if(t) {
-                t.trip.title = title;
-                t.trip.dates = document.getElementById('m-p-dates').value || 'TBD';
-                t.trip.targetDate = document.getElementById('m-p-target').value;
-                renderTrips();
-                
-                // Update detail views if we happened to edit the active one
-                if (currentTripId === editId) {
-                    renderDashboard();
-                }
-            }
-        }
-        else {
-            let c = getCurrentTrip(); if(!c) return; // Must be inside a trip
+            if(t) { t.trip.title = title; t.trip.city = document.getElementById('m-p-city').value; t.trip.dates = document.getElementById('m-p-dates').value || 'TBD'; t.trip.targetDate = document.getElementById('m-p-target').value; renderTrips(); if(currentTripId === editId) renderDashboard(); }
+        } else {
+            let c = getCurrentTrip(); if(!c) return; 
 
             if (editType === 'trip-modal') {
-                c.trip.title = document.getElementById('m-title').value;
-                c.trip.dates = document.getElementById('m-dates').value;
-                c.trip.duration = document.getElementById('m-dur').value;
-                c.trip.targetDate = document.getElementById('m-target').value;
-                renderDashboard();
+                c.trip.title = document.getElementById('m-title').value; c.trip.city = document.getElementById('m-city').value; c.trip.dates = document.getElementById('m-dates').value; c.trip.duration = document.getElementById('m-dur').value; c.trip.targetDate = document.getElementById('m-target').value; renderDashboard();
             } else if (editType === 'trip-desc') {
-                c.trip.desc = document.getElementById('m-desc').value;
-                renderDashboard();
+                c.trip.desc = document.getElementById('m-desc').value; renderDashboard();
             } else if (editType === 'peserta') {
                 let data = { id, name: document.getElementById('m-name').value, role: document.getElementById('m-role').value };
-                if(data.name) {
-                    if(editId) c.participants = c.participants.map(x => x.id===id ? data : x);
-                    else c.participants.push(data);
-                    renderPeserta(); renderDashboard(); renderBiaya();
-                }
+                if(data.name) { if(editId) c.participants = c.participants.map(x => x.id===id ? data : x); else c.participants.push(data); renderPeserta(); renderDashboard(); renderBiaya(); }
             } else if (editType === 'jadwal') {
                 let rawDate = document.getElementById('m-j-date').value;
                 let data = { id, rawDate, day: formatDate(rawDate), time: document.getElementById('m-j-time').value, title: document.getElementById('m-j-title').value, type: document.getElementById('m-j-type').value, desc: document.getElementById('m-b-desc').value };
-                if(data.title && rawDate) {
-                    if(editId) c.itinerary = c.itinerary.map(x => x.id===id ? data : x);
-                    else c.itinerary.push(data);
-                    c.itinerary.sort((a,b) => new Date(a.rawDate+'T'+a.time) - new Date(b.rawDate+'T'+b.time));
-                    renderJadwal();
+                if(data.title && rawDate) { 
+                    if(editId) {
+                        c.itinerary = c.itinerary.map(x => x.id===id ? data : x); 
+                    } else {
+                        // Tambahkan ke array
+                        c.itinerary.push(data); 
+                        // Jika tambah baru, sort berdasarkan tanggal (agar masuk grup hari yg tepat), dan jam.
+                        // Sortir ini hanya berlaku 1 kali saat insert. Jika di-drag, posisi manual yang akan bertahan.
+                        c.itinerary.sort((a,b) => new Date(a.rawDate+'T'+(a.time||'00:00')) - new Date(b.rawDate+'T'+(b.time||'00:00')));
+                    }
+                    renderJadwal(); 
                 }
             } else if (editType === 'barang') {
                 let old = editId ? c.checklist.find(x=>x.id==id).done : false;
                 let data = { id, name: document.getElementById('m-b-name').value, qty: document.getElementById('m-b-qty').value, cat: document.getElementById('m-b-cat').value, pic: document.getElementById('m-b-pic').value, note: document.getElementById('m-b-note').value, done: old };
-                if(data.name) {
-                    if(editId) c.checklist = c.checklist.map(x => x.id===id ? data : x);
-                    else c.checklist.push(data);
-                    renderBarang(); renderDashboard();
-                }
+                if(data.name) { if(editId) c.checklist = c.checklist.map(x => x.id===id ? data : x); else c.checklist.push(data); renderBarang(); renderDashboard(); }
             } else if (editType === 'biaya') {
                 let data = { id, name: document.getElementById('m-bi-name').value, amount: parseFloat(document.getElementById('m-bi-amount').value)||0, note: document.getElementById('m-bi-note').value };
-                if(data.name) {
-                    if(editId) c.budget = c.budget.map(x => x.id===id ? data : x);
-                    else c.budget.push(data);
-                    renderBiaya(); renderDashboard();
-                }
+                if(data.name) { if(editId) c.budget = c.budget.map(x => x.id===id ? data : x); else c.budget.push(data); renderBiaya(); renderDashboard(); }
             }
         }
-
         saveDataToJSONBin();
         closeModal();
     }
@@ -1085,11 +1189,8 @@
     function executeDelete() {
         if (pendingDelete.id !== null) {
             let {type, id} = pendingDelete;
-            
-            if(type === 'project') {
-                appState.trips = appState.trips.filter(x => x.id !== id);
-                renderTrips();
-            } else {
+            if(type === 'project') { appState.trips = appState.trips.filter(x => x.id !== id); renderTrips(); } 
+            else {
                 let c = getCurrentTrip();
                 if(c) {
                     if(type === 'peserta') { c.participants = c.participants.filter(x=>x.id!==id); renderPeserta(); renderDashboard(); renderBiaya(); }
@@ -1098,23 +1199,17 @@
                     if(type === 'biaya') { c.budget = c.budget.filter(x=>x.id!==id); renderBiaya(); renderDashboard(); }
                 }
             }
-            
-            saveDataToJSONBin();
-            closeConfirm();
+            saveDataToJSONBin(); closeConfirm();
         }
     }
 
     function startApp() {
         const ws = document.getElementById('welcome-screen');
-        ws.classList.add('hide');
-        setTimeout(() => { ws.style.display = 'none'; }, 600);
+        ws.classList.add('hide'); setTimeout(() => { ws.style.display = 'none'; }, 600);
     }
 
     window.onload = () => {
-        loadDataFromJSONBin().then(() => {
-            // Default load into Trips list view
-            openTripList();
-        });
+        loadDataFromJSONBin().then(() => { openTripList(); });
     };
 </script>
 </body>
